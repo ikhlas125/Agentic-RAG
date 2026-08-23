@@ -87,15 +87,28 @@ def replace_tables_with_docling( doc_json, doc_docling_json, doc_docling_md, out
 
         pairs = list(zip(table_boxes, replacements))
         extra = replacements[len(table_boxes):]
+        unmatched_boxes = table_boxes[len(replacements):]
 
         text = page["text"]
+
+        for box in reversed(unmatched_boxes):
+            start, stop = box["pos"]
+            wrapped = f"<!-- table start -->\n{text[start:stop]}\n<!-- table end -->\n"
+            text = text[:start] + wrapped + text[stop:]
+
         for i in range(len(pairs) - 1, -1, -1):
             box, block = pairs[i]
-            if i == len(pairs) - 1 and extra:
-                block = "\n\n".join([block, *extra])
+            table_blocks = [block, *extra] if i == len(pairs) - 1 and extra else [block]
+            wrapped = "\n\n".join(
+                f"<!-- table start -->\n{table_block}\n<!-- table end -->\n"
+                for table_block in table_blocks
+            )
             start, stop = box["pos"]
-            text = text[:start] + block + text[stop:]
+            text = text[:start] + wrapped + text[stop:]
         page["text"] = text
+
+    for page in pages:
+        page["text"] = f"<!-- page:{page['metadata']['page_number']} -->\n{page['text']}"
 
     cleaned_markdown = "\n\n".join(page["text"] for page in pages)
     with open(out_md, "w", encoding="utf-8") as file:
@@ -117,12 +130,16 @@ def table_pages_pdf(doc_json, pdf_in):
         if any(box.get("class") == "table" for box in page.get("page_boxes", []))
     )
 
+    if not pages:
+        print(f"No table pages detected in {doc_json}; skipping table_pages_pdf.")
+        return
+
     name = Path(pdf_in).stem
-    
+
     pdf_out = f"backend/storage/Artifacts/{name}/{name}_table_pages.pdf"
 
     doc = fitz.open(pdf_in)
-    doc.select([p - 1 for p in pages])   
+    doc.select([p - 1 for p in pages])
     doc.save(pdf_out)
     doc.close()
 
@@ -149,7 +166,7 @@ def docling_parser(input_path: str):
         f.write(result.document.model_dump_json(indent=2))
 
 
-# pdf_parser("backend/storage/documents/doc.pdf")
-# table_pages_pdf("backend/storage/Artifacts/doc/doc.json","backend/storage/documents/doc.pdf")
-# docling_parser("backend/storage/Artifacts/doc/doc_table_pages.pdf")
-# replace_tables_with_docling("backend/storage/Artifacts/doc/doc.json","backend/storage/Artifacts/doc/doc_docling.json","backend/storage/Artifacts/doc/doc_docling.md","backend/storage/Artifacts/doc/doc_fixed.md")
+pdf_parser("backend/storage/documents/doc.pdf")
+table_pages_pdf("backend/storage/Artifacts/doc/doc.json","backend/storage/documents/doc.pdf")
+docling_parser("backend/storage/Artifacts/doc/doc_table_pages.pdf")
+replace_tables_with_docling("backend/storage/Artifacts/doc/doc.json","backend/storage/Artifacts/doc/doc_docling.json","backend/storage/Artifacts/NASDAQ_ATSG_2022/doc_docling.md","backend/storage/Artifacts/NASDAQ_ATSG_2022/doc_fixed.md")
