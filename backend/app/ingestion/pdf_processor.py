@@ -1,55 +1,155 @@
-import os, subprocess, time, urllib.error, urllib.request
-from urllib.parse import urlparse
-from dotenv import dotenv_values, find_dotenv
+import os
+from docling.datamodel.base_models import InputFormat
+from docling.datamodel.pipeline_options import PdfPipelineOptions, TableFormerMode
+from docling.document_converter import DocumentConverter, PdfFormatOption
+import pymupdf4llm
+import json
+from backend.app.helper.helper import make_json_serializable
+from pathlib import Path
+import fitz
 
+def pdf_parser(input_path :str):
 
-def _wait_until_ready(api_url, timeout=60, interval=1):
-    deadline = time.monotonic() + timeout
-    while time.monotonic() < deadline:
-        try:
-            urllib.request.urlopen(api_url, timeout=interval)
-            return
-        except urllib.error.HTTPError:
-            return  # server responded (even with an error status), so it's up
-        except urllib.error.URLError:
-            time.sleep(interval)
-    raise TimeoutError(f"mineru-api did not become ready at {api_url} within {timeout}s")
-
-
-def run_mineru(input_path, output_dir,
-               backend="pipeline", method="txt", lang="en",
-               api_url="http://127.0.0.1:8000"):
-
-    env = {**os.environ, **dotenv_values(find_dotenv())}
-
-    parsed = urlparse(api_url)
-    host, port = parsed.hostname, str(parsed.port)
-
-    server = subprocess.Popen(
-        ["uv", "run", "mineru-api", "--host", host, "--port", port],
-        env=env,
+    text = pymupdf4llm.to_markdown(
+        input_path,
+        header=False,
+        footer=False,
+        page_chunks=True,
+        use_ocr=False,
     )
 
-    try:
-        _wait_until_ready(api_url)
+    text = make_json_serializable(text)
+    name = Path(input_path).stem
 
-        result = subprocess.run([
-            "uv", "run", "mineru",
-            "-p", input_path,
-            "-o", output_dir,
-            "-b", backend,
-            "--api-url", api_url,
-            "-m", method, "-l", lang,
-        ])
-        if result.returncode != 0:
-            raise RuntimeError(f"mineru exited with code {result.returncode}")
-    finally:
-        server.terminate()
-        server.wait()
+    output_dir = f"backend/storage/Artifacts/{name}"
+    os.makedirs(output_dir, exist_ok=True)
 
+    with open(os.path.join(output_dir, f"{name}.json"), "w", encoding="utf-8") as f:
+        json.dump(text, f, ensure_ascii=False, indent=2)
 
-if __name__ == "__main__":
-    run_mineru(
-        input_path="backend/storage/documents/doc.pdf",
-        output_dir="backend/storage/Artifacts/warm",
+    parts = [page["text"] for page in text]
+
+    markdown = "\n\n".join(parts)
+
+    with open(os.path.join(output_dir, f"{name}.md"), "w", encoding="utf-8") as file:
+        file.write(markdown)
+
+def replace_tables_with_docling( doc_json, doc_docling_json, doc_docling_md, out_md):
+
+    pages = json.load(open(doc_json, encoding="utf-8"))
+    docling = json.load(open(doc_docling_json, encoding="utf-8"))
+
+    blocks, current = [], []
+    for line in open(doc_docling_md, encoding="utf-8"):
+        line = line.rstrip("\n")
+        if line.startswith("|"):
+            current.append(line)
+        elif current:
+            blocks.append("\n".join(current))
+            current = []
+    if current:
+        blocks.append("\n".join(current))
+
+    if len(blocks) != len(docling["tables"]):
+        raise ValueError(
+            f"{len(blocks)} table blocks in {doc_docling_md} vs "
+            f"{len(docling['tables'])} table entries in {doc_docling_json}"
+        )
+
+    docling_pages = {}
+    for block, table in zip(blocks, docling["tables"]):
+        page_no = table["prov"][0]["page_no"]
+        docling_pages.setdefault(page_no, []).append(block)
+
+    table_pages = sorted(
+        page["metadata"]["page_number"]
+        for page in pages
+        if any(box.get("class") == "table" for box in page.get("page_boxes", []))
     )
+    page_rank = {page_number: i + 1 for i, page_number in enumerate(table_pages)}
+
+    mismatches = []
+    for page in pages:
+        rank = page_rank.get(page["metadata"]["page_number"])
+        if rank is None:
+            continue
+
+        table_boxes = sorted(
+            (box for box in page["page_boxes"] if box.get("class") == "table"),
+            key=lambda box: box["pos"][0],
+        )
+        replacements = docling_pages.get(rank, [])
+
+        if len(table_boxes) != len(replacements):
+            mismatches.append(
+                (page["metadata"]["page_number"], len(table_boxes), len(replacements))
+            )
+
+        pairs = list(zip(table_boxes, replacements))
+        extra = replacements[len(table_boxes):]
+
+        text = page["text"]
+        for i in range(len(pairs) - 1, -1, -1):
+            box, block = pairs[i]
+            if i == len(pairs) - 1 and extra:
+                block = "\n\n".join([block, *extra])
+            start, stop = box["pos"]
+            text = text[:start] + block + text[stop:]
+        page["text"] = text
+
+    cleaned_markdown = "\n\n".join(page["text"] for page in pages)
+    with open(out_md, "w", encoding="utf-8") as file:
+        file.write(cleaned_markdown)
+
+    if mismatches:
+        print(f"{len(mismatches)} page(s) with mismatched table counts (page, simple, docling):")
+        for mismatch in mismatches:
+            print(" ", mismatch)
+
+    return mismatches
+
+
+def table_pages_pdf(doc_json, pdf_in):
+    doc_pages = json.load(open(doc_json))
+    pages = sorted(
+        page["metadata"]["page_number"]
+        for page in doc_pages
+        if any(box.get("class") == "table" for box in page.get("page_boxes", []))
+    )
+
+    name = Path(pdf_in).stem
+    
+    pdf_out = f"backend/storage/Artifacts/{name}/{name}_table_pages.pdf"
+
+    doc = fitz.open(pdf_in)
+    doc.select([p - 1 for p in pages])   
+    doc.save(pdf_out)
+    doc.close()
+
+
+def docling_parser(input_path: str):
+
+    options = PdfPipelineOptions()
+    options.do_ocr = False
+    options.table_structure_options.mode = TableFormerMode.ACCURATE
+    converter = DocumentConverter(
+        format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=options)}
+    )
+    result = converter.convert(input_path)
+
+    name = Path(input_path).parent.name
+    
+    output_dir = f"backend/storage/Artifacts/{name}"
+    os.makedirs(output_dir, exist_ok=True)
+
+    with open(os.path.join(output_dir, f"{name}_docling.md"), "w") as f:
+        f.write(result.document.export_to_markdown())
+
+    with open(os.path.join(output_dir, f"{name}_docling.json"), "w") as f:
+        f.write(result.document.model_dump_json(indent=2))
+
+
+# pdf_parser("backend/storage/documents/doc.pdf")
+# table_pages_pdf("backend/storage/Artifacts/doc/doc.json","backend/storage/documents/doc.pdf")
+# docling_parser("backend/storage/Artifacts/doc/doc_table_pages.pdf")
+# replace_tables_with_docling("backend/storage/Artifacts/doc/doc.json","backend/storage/Artifacts/doc/doc_docling.json","backend/storage/Artifacts/doc/doc_docling.md","backend/storage/Artifacts/doc/doc_fixed.md")
