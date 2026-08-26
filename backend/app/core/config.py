@@ -58,8 +58,13 @@ class Settings(BaseSettings):
 
     # OpenRouter (primary provider — see backend/.env)
     OPENROUTER_API_KEY: Optional[str] = None
-    OPENROUTER_MODEL: str = "anthropic/claude-sonnet-4.5"
+    OPENROUTER_BASE_URL: str = "https://openrouter.ai/api/v1"
+    OPENROUTER_MODEL: str = "openai/gpt-4o-mini"
     ROUTER_MODEL: str = "openai/gpt-oss-120b"
+
+    # GMI Cloud (secondary provider — see backend/.env)
+    GMI_CLOUD_KEY: Optional[str] = None
+    GMI_CLOUD_BASE_URL: Optional[str] = None
 
     # Structured-source defaults (DBNode / retrieval adapters)
     SQL_MAX_ROWS: int = 200

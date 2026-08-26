@@ -13,28 +13,25 @@ from app.ingestion.pdf_processor import (
     replace_tables_with_docling,
     table_pages_pdf,
 )
-from app.ingestion.manifest import (
-    file_id_for, is_registered, register_db, register_file,
-)
+from app.ingestion.manifest import is_registered, register_db, register_file
 from app.ingestion.vector_indexer import index_chunks
 from app.retrieval.file_store import SUPPORTED_SUFFIXES, FileAdapter
 
 
-def load_pdf(pdf, index: bool = True, source: str | None = None,
-             domain: str | None = None) -> int:
+def load_pdf(pdf, index: bool = True, source: str | None = None) -> int:
     pdf = Path(pdf)
     name = pdf.stem
-    # artifacts stay under the readable stem; `source` is the manifest file_id
-    # that goes into the Qdrant payload
-    source = source or file_id_for(pdf)
     out = OUTPUT_DIR / name
     doc_json = out / f"{name}.json"
     fixed_md = out / f"{name}_fixed.md"
 
-    
-
     if not doc_json.exists():
         pdf_parser(pdf)
+
+    # register_file needs the parsed json above for its doc_type guess, and
+    # its file_id is what `source` becomes in the Qdrant payload
+    entry = register_file(pdf, artifact_name=name)
+    source = source or entry["file_id"]
 
     if not fixed_md.exists():
         if table_pages_pdf(doc_json, pdf):
@@ -48,12 +45,11 @@ def load_pdf(pdf, index: bool = True, source: str | None = None,
             # still needs the page markers it would have injected.
             page_marked_markdown(doc_json, fixed_md)
 
-    chunks = process_document(fixed_md, out, domain=domain, source=source)
+    chunks = process_document(fixed_md, out, doc_type=entry["doc_type"], source=source)
     return index_chunks(chunks) if index else len(chunks)
 
 
-def load_folder(folder=None, index: bool = True,
-                domain: str | None = None) -> FileAdapter:
+def load_folder(folder=None, index: bool = True) -> FileAdapter:
     folder = Path(folder) if folder else settings.datasets_dir
     adapter = FileAdapter("datasets", max_rows=settings.SQL_MAX_ROWS)
 
@@ -67,10 +63,12 @@ def load_folder(folder=None, index: bool = True,
             elif suffix in SUPPORTED_SUFFIXES:
                 adapter.add_file(p)
             elif suffix == ".pdf" and not is_registered(p):
-                load_pdf(p, index=index, domain=domain)
-                register_file(p)  # same file_id load_pdf stamped on the chunks
+                load_pdf(p, index=index)
         except Exception as exc:
             print(f"skipped {p.name}: {type(exc).__name__}: {exc}")
 
     register_db(adapter)  # after the loop, so the schema is complete
     return adapter
+
+if __name__ == "__main__":
+    load_folder(settings.storage_dir, True)
