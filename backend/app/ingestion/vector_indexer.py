@@ -1,5 +1,6 @@
 import json
 import os
+import uuid
 
 from fastembed import SparseTextEmbedding
 from qdrant_client import QdrantClient
@@ -8,10 +9,13 @@ from qdrant_client.http.models import (
     PointStruct, SparseVector,
 )
 
-from backend.app.ingestion.embedder import embed_texts
+from app.core.config import OUTPUT_DIR
+from app.ingestion.embedder import embed_texts
 
 _COLLECTION = "agentic_rag"
 _VECTOR_SIZE = 3072
+
+_ID_NAMESPACE = uuid.NAMESPACE_DNS
 
 _qdrant = QdrantClient(
     host=os.environ.get("QDRANT_HOST", "localhost"),
@@ -45,7 +49,7 @@ def index_chunks(chunks):
     print("indexing")
     points = [
         PointStruct(
-            id=chunk["id"],
+            id=str(uuid.uuid5(_ID_NAMESPACE, f"{chunk['metadata']['source']}:{chunk['id']}")),
             vector={
                 "dense": dense_vec,
                 "sparse": SparseVector(indices=sparse_vec.indices.tolist(), values=sparse_vec.values.tolist()),
@@ -53,6 +57,7 @@ def index_chunks(chunks):
             payload={
                 "content": chunk["content"],
                 "token_count": chunk["token_count"],
+                "chunk_id": chunk["id"],
                 **chunk["metadata"],
             },
         )
@@ -65,7 +70,7 @@ def index_chunks(chunks):
 
 if __name__ == "__main__":
     name = "doc"
-    chunks_path = f"backend/storage/Artifacts/{name}/chunks_.json"
+    chunks_path = OUTPUT_DIR / name / "chunks_.json"
 
     with open(chunks_path, "r", encoding="utf-8") as f:
         chunks = json.load(f)

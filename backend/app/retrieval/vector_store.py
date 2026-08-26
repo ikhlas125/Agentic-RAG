@@ -3,8 +3,8 @@ from qdrant_client.http.models import (
     Filter, FieldCondition, MatchValue, SparseVector,
 )
 
-from backend.app.ingestion.embedder import embed_texts
-from backend.app.ingestion.vector_indexer import _qdrant, _COLLECTION, _sparse_model
+from app.ingestion.embedder import embed_texts
+from app.ingestion.vector_indexer import _qdrant, _COLLECTION, _sparse_model
 
 
 def hybrid_search(query: str, top_k: int = 10, content_type: str | None = None):
