@@ -6,6 +6,8 @@ import json
 import os
 from pathlib import Path
 
+from app.core.config import OUTPUT_DIR
+
 _TOKENIZER = tiktoken.encoding_for_model("text-embedding-3-small")
 
 _TABLE_REF_PATTERN = re.compile(r"\[TABLE_REF:([0-9a-f-]{36})\]")
@@ -133,8 +135,11 @@ def merge_small_chunks(chunks, min_tokens=MIN_CHUNK_TOKENS):
     return merged
 
 
-def process_document(fixed_md_path, out_dir):
+def process_document(fixed_md_path, out_dir, source=None):
     
+    if source is None:
+        source = Path(fixed_md_path).stem.removesuffix("_fixed")
+
     os.makedirs(out_dir, exist_ok=True)
 
     markdown_text, tables = extract_tables(fixed_md_path)
@@ -169,6 +174,7 @@ def process_document(fixed_md_path, out_dir):
         else:
             content_type = "table"
         doc.metadata["content_type"] = content_type
+        doc.metadata["source"] = source
 
         content = resolve_tables(doc.page_content, tables)
         embedding_text = build_embedding_text(doc.page_content, doc.metadata, prefix_keys=varying_header_keys)
@@ -208,6 +214,5 @@ def process_document(fixed_md_path, out_dir):
 
 if __name__ == "__main__":
     name = "NASDAQ_ATSG_2022"
-    fixed_md = f"backend/storage/Artifacts/{name}/{name}_fixed.md"
-    out_dir = Path(f"backend/storage/Artifacts/{name}/")
-    process_document(fixed_md, out_dir)
+    out_dir = OUTPUT_DIR / name
+    process_document(out_dir / f"{name}_fixed.md", out_dir, source=name)

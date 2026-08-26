@@ -21,7 +21,7 @@ import json
 from typing import Any
 
 # TODO: reconcile with the payload vector_indexer.py actually writes.
-_HIT_FIELDS = ("source", "page", "title", "section", "image")
+_HIT_FIELDS = ("source", "page_start", "page_end", "sections", "content_type")
 MAX_CHARS = 1500
 
 

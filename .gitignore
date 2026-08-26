@@ -10,3 +10,6 @@ wheels/
 .venv
 backend/storage/Artifacts
 backend/.env
+
+# MinerU parse output
+output/
