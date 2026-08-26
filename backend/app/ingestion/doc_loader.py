@@ -74,3 +74,7 @@ def load_folder(folder=None, index: bool = True,
 
     register_db(adapter)  # after the loop, so the schema is complete
     return adapter
+
+
+
+adapter = load_folder("storage/documents/Legal", index=True)
