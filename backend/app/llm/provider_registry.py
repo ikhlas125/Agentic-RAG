@@ -14,7 +14,11 @@ class ProviderNotConfigured(RuntimeError):
     """Raised when OPENROUTER_API_KEY is absent."""
 
 
-def get_model(model: str | None = None, **kwargs: Any):
+def get_model(
+    model: str | None = None,
+    base_url: str | None = None,
+    **kwargs: Any,
+):
     """Return a LangChain chat model for the given OpenRouter model id."""
     if not settings.OPENROUTER_API_KEY:
         raise ProviderNotConfigured("OPENROUTER_API_KEY is not set in backend/.env")
@@ -25,5 +29,6 @@ def get_model(model: str | None = None, **kwargs: Any):
         model or settings.OPENROUTER_MODEL,
         model_provider="openrouter",
         openrouter_api_key=settings.OPENROUTER_API_KEY,
+        base_url=base_url or settings.OPENROUTER_BASE_URL,
         **kwargs,
     )

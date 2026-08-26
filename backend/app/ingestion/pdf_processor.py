@@ -4,11 +4,12 @@ from docling.datamodel.pipeline_options import PdfPipelineOptions, TableFormerMo
 from docling.document_converter import DocumentConverter, PdfFormatOption
 import pymupdf4llm
 import json
-from backend.app.helper.helper import make_json_serializable
+from app.core.config import DOCUMENTS_DIR, OUTPUT_DIR
+from app.helper.helper import make_json_serializable
 from pathlib import Path
 import fitz
 
-def pdf_parser(input_path :str):
+def pdf_parser(input_path :str, name: str | None = None):
 
     text = pymupdf4llm.to_markdown(
         input_path,
@@ -19,9 +20,9 @@ def pdf_parser(input_path :str):
     )
 
     text = make_json_serializable(text)
-    name = Path(input_path).stem
+    name = name or Path(input_path).stem
 
-    output_dir = f"backend/storage/Artifacts/{name}"
+    output_dir = OUTPUT_DIR / name
     os.makedirs(output_dir, exist_ok=True)
 
     with open(os.path.join(output_dir, f"{name}.json"), "w", encoding="utf-8") as f:
@@ -33,6 +34,8 @@ def pdf_parser(input_path :str):
 
     with open(os.path.join(output_dir, f"{name}.md"), "w", encoding="utf-8") as file:
         file.write(markdown)
+
+
 
 def replace_tables_with_docling( doc_json, doc_docling_json, doc_docling_md, out_md):
 
@@ -122,26 +125,41 @@ def replace_tables_with_docling( doc_json, doc_docling_json, doc_docling_md, out
     return mismatches
 
 
-def table_pages_pdf(doc_json, pdf_in):
-    doc_pages = json.load(open(doc_json))
-    pages = sorted(
+def table_page_numbers(doc_json):
+    doc_pages = json.load(open(doc_json, encoding="utf-8"))
+    return sorted(
         page["metadata"]["page_number"]
         for page in doc_pages
         if any(box.get("class") == "table" for box in page.get("page_boxes", []))
     )
 
+
+def table_pages_pdf(doc_json, pdf_in, name: str | None = None):
+    pages = table_page_numbers(doc_json)
+
     if not pages:
-        print(f"No table pages detected in {doc_json}; skipping table_pages_pdf.")
-        return
+        return []
 
-    name = Path(pdf_in).stem
+    name = name or Path(pdf_in).stem
 
-    pdf_out = f"backend/storage/Artifacts/{name}/{name}_table_pages.pdf"
+    pdf_out = OUTPUT_DIR / name / f"{name}_table_pages.pdf"
 
     doc = fitz.open(pdf_in)
     doc.select([p - 1 for p in pages])
-    doc.save(pdf_out)
+    doc.save(str(pdf_out))
     doc.close()
+
+    return pages
+
+
+def page_marked_markdown(doc_json, out_md):
+    pages = json.load(open(doc_json, encoding="utf-8"))
+    marked = [
+        f"<!-- page:{page['metadata']['page_number']} -->\n{page['text']}"
+        for page in pages
+    ]
+    with open(out_md, "w", encoding="utf-8") as file:
+        file.write("\n\n".join(marked))
 
 
 def docling_parser(input_path: str):
@@ -156,17 +174,27 @@ def docling_parser(input_path: str):
 
     name = Path(input_path).parent.name
     
-    output_dir = f"backend/storage/Artifacts/{name}"
+    output_dir = OUTPUT_DIR / name
     os.makedirs(output_dir, exist_ok=True)
 
-    with open(os.path.join(output_dir, f"{name}_docling.md"), "w") as f:
+    with open(os.path.join(output_dir, f"{name}_docling.md"), "w", encoding="utf-8") as f:
         f.write(result.document.export_to_markdown())
 
-    with open(os.path.join(output_dir, f"{name}_docling.json"), "w") as f:
+    with open(os.path.join(output_dir, f"{name}_docling.json"), "w", encoding="utf-8") as f:
         f.write(result.document.model_dump_json(indent=2))
 
 
-pdf_parser("backend/storage/documents/doc.pdf")
-table_pages_pdf("backend/storage/Artifacts/doc/doc.json","backend/storage/documents/doc.pdf")
-docling_parser("backend/storage/Artifacts/doc/doc_table_pages.pdf")
-replace_tables_with_docling("backend/storage/Artifacts/doc/doc.json","backend/storage/Artifacts/doc/doc_docling.json","backend/storage/Artifacts/doc/doc_docling.md","backend/storage/Artifacts/doc/doc_fixed.md")
+if __name__ == "__main__":
+    name = "doc"
+    pdf = DOCUMENTS_DIR / f"{name}.pdf"
+    artifacts = OUTPUT_DIR / name
+
+    pdf_parser(pdf)
+    table_pages_pdf(artifacts / f"{name}.json", pdf)
+    docling_parser(artifacts / f"{name}_table_pages.pdf")
+    replace_tables_with_docling(
+        artifacts / f"{name}.json",
+        artifacts / f"{name}_docling.json",
+        artifacts / f"{name}_docling.md",
+        artifacts / f"{name}_fixed.md",
+    )

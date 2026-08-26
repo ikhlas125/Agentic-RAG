@@ -44,6 +44,8 @@ class FileAdapter(DataAdapter):
         self._duckdb = duckdb
         self.con = duckdb.connect(":memory:")
         self._notes: list[str] = []
+        # table or schema name -> file it came from, for the manifest
+        self.sources: dict[str, str] = {}
         super().__init__(name, max_rows)
 
     # ---- ingestion -------------------------------------------------------
@@ -64,6 +66,7 @@ class FileAdapter(DataAdapter):
         self.con.execute(
             f'CREATE OR REPLACE VIEW "{table}" AS SELECT * FROM {reader}')
         self._notes.append(f"{table}  <- {p.name}")
+        self.sources[table] = p.name
         self.invalidate_schema()
         return table
 
@@ -85,6 +88,7 @@ class FileAdapter(DataAdapter):
         finally:
             self.con.execute("USE memory.main")   # restore even on failure
         self._notes.append(f"schema {sch}  <- {p.name} (SQL dump)")
+        self.sources[sch] = p.name
         self.invalidate_schema()
         return sch
 

@@ -6,6 +6,8 @@ import json
 import os
 from pathlib import Path
 
+from app.core.config import OUTPUT_DIR
+
 _TOKENIZER = tiktoken.encoding_for_model("text-embedding-3-small")
 
 _TABLE_REF_PATTERN = re.compile(r"\[TABLE_REF:([0-9a-f-]{36})\]")
@@ -139,7 +141,8 @@ def page_content_boxes(doc_json_path):
 
     boxes = {}
     for page in pages:
-        content_boxes = [b["bbox"] for b in page["page_boxes"] if b["class"] not in ("page-header", "page-footer")]
+        content_boxes = [b["bbox"] for b in page.get("page_boxes", [])
+                         if b.get("bbox") and b.get("class") not in ("page-header", "page-footer")]
         if content_boxes:
             boxes[page["metadata"]["page_number"]] = [
                 min(b[0] for b in content_boxes),
@@ -148,10 +151,13 @@ def page_content_boxes(doc_json_path):
                 max(b[3] for b in content_boxes),
             ]
 
-    return pages[0]["metadata"]["file_path"], boxes
+    return pages[0]["metadata"].get("file_path", ""), boxes
 
 
-def process_document(fixed_md_path, out_dir, domain):
+def process_document(fixed_md_path, out_dir, doc_type=None, source=None):
+
+    if source is None:
+        source = Path(fixed_md_path).stem.removesuffix("_fixed")
 
     os.makedirs(out_dir, exist_ok=True)
 
@@ -177,7 +183,7 @@ def process_document(fixed_md_path, out_dir, domain):
             current_page = page_numbers[-1]
         doc.metadata["page_start"] = page_numbers[0] if page_numbers else current_page
         doc.metadata["page_end"] = current_page
-        doc.metadata["domain"] = domain
+        doc.metadata["doc_type"] = doc_type
         doc.page_content = _PAGE_MARKER_PATTERN.sub("", doc.page_content)
 
         table_refs = _TABLE_REF_PATTERN.findall(doc.page_content)
@@ -188,6 +194,7 @@ def process_document(fixed_md_path, out_dir, domain):
         else:
             content_type = "table"
         doc.metadata["content_type"] = content_type
+        doc.metadata["source"] = source
 
         content = resolve_tables(doc.page_content, tables)
         embedding_text = build_embedding_text(doc.page_content, doc.metadata, prefix_keys=varying_header_keys)
@@ -236,9 +243,3 @@ def process_document(fixed_md_path, out_dir, domain):
 
     return chunks
 
-
-if __name__ == "__main__":
-    name = "doc"
-    fixed_md = f"backend/storage/Artifacts/{name}/{name}_fixed.md"
-    out_dir = Path(f"backend/storage/Artifacts/{name}/")
-    process_document(fixed_md, out_dir, domain="finance")

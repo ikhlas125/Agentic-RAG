@@ -8,7 +8,12 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Generated data
 backend/storage/Artifacts
 qdrant_storage
+
+# MinerU parse output
+output/
 
 backend/.env
