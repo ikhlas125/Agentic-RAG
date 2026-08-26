@@ -10,6 +10,7 @@ from pathlib import Path
 
 from app.core.config import MANIFEST_PATH, OUTPUT_DIR
 from app.llm.provider_registry import get_model
+from app.core.config import settings
 
 DOC_TYPES = ("financial_data", "legal_data", "other")
 

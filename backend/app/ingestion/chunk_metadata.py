@@ -154,7 +154,7 @@ def page_content_boxes(doc_json_path):
     return pages[0]["metadata"].get("file_path", ""), boxes
 
 
-def process_document(fixed_md_path, out_dir, domain=None, source=None):
+def process_document(fixed_md_path, out_dir, doc_type=None, source=None):
 
     if source is None:
         source = Path(fixed_md_path).stem.removesuffix("_fixed")
@@ -183,7 +183,7 @@ def process_document(fixed_md_path, out_dir, domain=None, source=None):
             current_page = page_numbers[-1]
         doc.metadata["page_start"] = page_numbers[0] if page_numbers else current_page
         doc.metadata["page_end"] = current_page
-        doc.metadata["domain"] = domain
+        doc.metadata["doc_type"] = doc_type
         doc.page_content = _PAGE_MARKER_PATTERN.sub("", doc.page_content)
 
         table_refs = _TABLE_REF_PATTERN.findall(doc.page_content)
@@ -243,9 +243,3 @@ def process_document(fixed_md_path, out_dir, domain=None, source=None):
 
     return chunks
 
-
-if __name__ == "__main__":
-    name = "doc"
-    out_dir = OUTPUT_DIR / name
-    process_document(out_dir / f"{name}_fixed.md", out_dir,
-                     domain="finance", source=name)
