@@ -9,4 +9,6 @@ wheels/
 # Virtual environments
 .venv
 backend/storage/Artifacts
+qdrant_storage
+
 backend/.env

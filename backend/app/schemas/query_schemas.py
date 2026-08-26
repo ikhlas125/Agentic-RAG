@@ -17,12 +17,6 @@ class SQLQueryArgs(BaseModel):
         default="", description="One line on what this query is meant to find.")
 
 
-class DocSearchArgs(BaseModel):
-    """What the DocNode asks the persona LLM to produce."""
-
-    query: str = Field(description="Natural-language search query.")
-
-
 # ---- trace / result payloads ----------------------------------------------
 
 class SQLAttempt(BaseModel):

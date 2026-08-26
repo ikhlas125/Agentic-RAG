@@ -11,7 +11,7 @@ _MODEL = "openai/text-embedding-3-large"
 _BASE_URL = "https://openrouter.ai/api/v1"
 _BATCH_SIZE = 100
 
-_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"], base_url=_BASE_URL)
+_client = OpenAI(api_key=os.environ["OPENROUTER_API_KEY"], base_url=_BASE_URL)
 
 
 def embed_texts(texts):

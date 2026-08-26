@@ -169,4 +169,4 @@ def docling_parser(input_path: str):
 pdf_parser("backend/storage/documents/doc.pdf")
 table_pages_pdf("backend/storage/Artifacts/doc/doc.json","backend/storage/documents/doc.pdf")
 docling_parser("backend/storage/Artifacts/doc/doc_table_pages.pdf")
-replace_tables_with_docling("backend/storage/Artifacts/doc/doc.json","backend/storage/Artifacts/doc/doc_docling.json","backend/storage/Artifacts/NASDAQ_ATSG_2022/doc_docling.md","backend/storage/Artifacts/NASDAQ_ATSG_2022/doc_fixed.md")
+replace_tables_with_docling("backend/storage/Artifacts/doc/doc.json","backend/storage/Artifacts/doc/doc_docling.json","backend/storage/Artifacts/doc/doc_docling.md","backend/storage/Artifacts/doc/doc_fixed.md")

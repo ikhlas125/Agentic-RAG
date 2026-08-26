@@ -1,4 +1,9 @@
+import json
 
+def load_json(path: str):
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+    
 def make_json_serializable(obj):
     if isinstance(obj, dict):
         return {key: make_json_serializable(value) for key, value in obj.items()}

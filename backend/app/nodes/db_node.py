@@ -15,6 +15,7 @@ from __future__ import annotations
 from typing import Any
 
 from app.core.config import settings
+from app.core.graph_state import State
 from app.retrieval.base_store import DataAdapter
 from app.schemas.query_schemas import SQLQueryArgs
 
@@ -69,7 +70,7 @@ def generate_sql(llm: Any, adapter: DataAdapter, question: str,
     return result, attempts
 
 
-def db_node(state: dict) -> dict:
+def db_node(state: State) -> State:
     """Graph entrypoint: state -> state."""
     adapter: DataAdapter = state["adapter"]
     result, attempts = generate_sql(

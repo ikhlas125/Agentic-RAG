@@ -1,0 +1,53 @@
+{
+  "doc_sources": [
+    {
+      "file_id": "f1",
+      "doc_type": "financial_statement",
+      "summary": "2022 annual report and shareholder letter for Air Transport Services Group (ATSG), covering its Cargo Aircraft Management (CAM) and ACMI Services segments, record revenue over $2 billion, and full-year earnings results.",
+      "filename": "NASDAQ_ATSG_2022.pdf"
+    },
+    {
+      "file_id": "f2",
+      "doc_type": "financial_statement",
+      "summary": "Microsoft Corporation's Form 10-K annual report filed with the SEC for the fiscal year ended June 30, 2025, including registrant and filer status details and the report's index.",
+      "filename": "doc.pdf"
+    },
+    {
+      "file_id": "f3",
+      "doc_type": "contract",
+      "summary": "Confidentiality and Non-Disclosure Agreement template between The NASDAQ OMX Group, Inc. and a Recipient, defining confidential information and the Recipient's obligations of care and non-disclosure.",
+      "filename": "3511_standard_nda.pdf"
+    },
+    {
+      "file_id": "f4",
+      "doc_type": "contract",
+      "summary": "Sample Non-Disclosure Agreement (Appendix C) from a City of Winnipeg RFP for consulting services on a wastewater SCADA communications system, defining confidential information and confidant obligations.",
+      "filename": "426-2017_Appendix_C-Sample_Non-Disclosure_Agreement.pdf"
+    },
+    {
+      "file_id": "f5",
+      "doc_type": "contract",
+      "summary": "Confidentiality (Non-Disclosure) Agreement between Brooks' Bottling Company, LLC and a client, covering handling of the client's proprietary formulations, processing procedures, and other confidential product information.",
+      "filename": "183.pdf"
+    },
+    {
+      "file_id": "f6",
+      "doc_type": "contract",
+      "summary": "Non-Disclosure Agreement between an individual recipient and Frodsham Town Council concerning confidential information for recommending future land use of a decommissioned play area on Ship Street.",
+      "filename": "118_3-Non-disclosure-agreement.pdf"
+    },
+    {
+      "file_id": "f7",
+      "doc_type": "contract",
+      "summary": "Unilateral Non-Disclosure Agreement between Nordic Knowledge Partners ApS (NKP) and a subject-matter expert, covering contact persons and definitions related to expert consultation projects.",
+      "filename": "59b1148ff6952b0001bdbedc_20170907_non_20disclosure_20agreement_expert.pdf"
+    }
+  ],
+  "db_sources": [
+    {
+      "db_id": "sqlite1",
+      "tables": ["returns"],
+      "schema_summary": "Single 'returns' table recording product returns (return_id, sale_id, reason, return_date); sample data includes 2 returns referencing sale_ids 2 and 6."
+    }
+  ]
+}

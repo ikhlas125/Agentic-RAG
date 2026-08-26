@@ -133,8 +133,26 @@ def merge_small_chunks(chunks, min_tokens=MIN_CHUNK_TOKENS):
     return merged
 
 
-def process_document(fixed_md_path, out_dir):
-    
+def page_content_boxes(doc_json_path):
+    with open(doc_json_path, encoding="utf-8") as f:
+        pages = json.load(f)
+
+    boxes = {}
+    for page in pages:
+        content_boxes = [b["bbox"] for b in page["page_boxes"] if b["class"] not in ("page-header", "page-footer")]
+        if content_boxes:
+            boxes[page["metadata"]["page_number"]] = [
+                min(b[0] for b in content_boxes),
+                min(b[1] for b in content_boxes),
+                max(b[2] for b in content_boxes),
+                max(b[3] for b in content_boxes),
+            ]
+
+    return pages[0]["metadata"]["file_path"], boxes
+
+
+def process_document(fixed_md_path, out_dir, domain):
+
     os.makedirs(out_dir, exist_ok=True)
 
     markdown_text, tables = extract_tables(fixed_md_path)
@@ -159,6 +177,7 @@ def process_document(fixed_md_path, out_dir):
             current_page = page_numbers[-1]
         doc.metadata["page_start"] = page_numbers[0] if page_numbers else current_page
         doc.metadata["page_end"] = current_page
+        doc.metadata["domain"] = domain
         doc.page_content = _PAGE_MARKER_PATTERN.sub("", doc.page_content)
 
         table_refs = _TABLE_REF_PATTERN.findall(doc.page_content)
@@ -184,6 +203,18 @@ def process_document(fixed_md_path, out_dir):
 
     chunks = merge_small_chunks(chunks)
 
+    doc_json_path = os.path.join(out_dir, f"{Path(fixed_md_path).stem.removesuffix('_fixed')}.json")
+    pdf_path, page_boxes = page_content_boxes(doc_json_path)
+
+    for chunk in chunks:
+        page_start = chunk["metadata"].get("page_start") or 0
+        page_end = chunk["metadata"].get("page_end") or 0
+        chunk["metadata"]["pdf_path"] = pdf_path
+        chunk["metadata"]["bbox"] = [
+            {"page": page, "bbox": page_boxes[page]}
+            for page in range(page_start, page_end + 1) if page in page_boxes
+        ]
+
     with open(os.path.join(out_dir, "chunks_.json"), "w", encoding="utf-8") as f:
         json.dump(chunks, f, ensure_ascii=False, indent=2)
 
@@ -207,7 +238,7 @@ def process_document(fixed_md_path, out_dir):
 
 
 if __name__ == "__main__":
-    name = "NASDAQ_ATSG_2022"
+    name = "doc"
     fixed_md = f"backend/storage/Artifacts/{name}/{name}_fixed.md"
     out_dir = Path(f"backend/storage/Artifacts/{name}/")
-    process_document(fixed_md, out_dir)
+    process_document(fixed_md, out_dir, domain="finance")

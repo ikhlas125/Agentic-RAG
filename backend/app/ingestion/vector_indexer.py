@@ -64,7 +64,7 @@ def index_chunks(chunks):
 
 
 if __name__ == "__main__":
-    name = "NASDAQ_ATSG_2022"
+    name = "doc"
     chunks_path = f"backend/storage/Artifacts/{name}/chunks_.json"
 
     with open(chunks_path, "r", encoding="utf-8") as f:

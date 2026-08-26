@@ -16,6 +16,7 @@ DOCUMENTS_DIR = STORAGE_DIR / "documents"
 OUTPUT_DIR = STORAGE_DIR / "Artifacts"
 PAGE_IMAGES_DIR = STORAGE_DIR / "page_images"
 DATASETS_DIR = STORAGE_DIR / "datasets"
+MANIFEST_PATH =  DOCUMENTS_DIR / "manifest.json"
 
 # Ensure runtime storage directories exist
 for directory in (DOCUMENTS_DIR, PAGE_IMAGES_DIR, DATASETS_DIR):
@@ -58,6 +59,7 @@ class Settings(BaseSettings):
     # OpenRouter (primary provider — see backend/.env)
     OPENROUTER_API_KEY: Optional[str] = None
     OPENROUTER_MODEL: str = "anthropic/claude-sonnet-4.5"
+    ROUTER_MODEL: str = "openai/gpt-oss-120b"
 
     # Structured-source defaults (DBNode / retrieval adapters)
     SQL_MAX_ROWS: int = 200
@@ -71,6 +73,7 @@ class Settings(BaseSettings):
     # Databases
     POSTGRES_URI: Optional[str] = "postgresql://user:password@localhost:5432/agentic_db"
     MONGODB_URI: Optional[str] = "mongodb://localhost:27017/agentic_db"
+
 
 
 # Singleton instance for import across backend app
