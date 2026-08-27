@@ -56,19 +56,27 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: Optional[str] = None
     DEEPSEEK_API_KEY: Optional[str] = None
 
-    # OpenRouter (primary provider — see backend/.env)
+    # OpenRouter — light/bulk work: source summaries, SQL drafting, embeddings
     OPENROUTER_API_KEY: Optional[str] = None
     OPENROUTER_BASE_URL: str = "https://openrouter.ai/api/v1"
     OPENROUTER_MODEL: str = "openai/gpt-4o-mini"
-    ROUTER_MODEL: str = "openai/gpt-oss-120b"
 
-    # GMI Cloud (secondary provider — see backend/.env)
-    GMI_CLOUD_KEY: Optional[str] = None
-    GMI_CLOUD_BASE_URL: Optional[str] = None
+    # GMI Cloud — heavy reasoning (the routing agent). Only the free MiniMax
+    # models: "MiniMaxAI/MiniMax-M2.7" and "MiniMaxAI/MiniMax-M3".
+    GMI_API_KEY: Optional[str] = None
+    GMI_BASE_URL: str = "https://api.gmi-serving.com/v1"
+    ROUTER_MODEL: str = "MiniMaxAI/MiniMax-M2.7"
 
     # Structured-source defaults (DBNode / retrieval adapters)
     SQL_MAX_ROWS: int = 200
     SQL_SAMPLE_ROWS: int = 2
+
+    # Qdrant — Qdrant Cloud when QDRANT_URL is set, else the local host/port
+    QDRANT_URL: Optional[str] = None
+    QDRANT_API_KEY: Optional[str] = None
+    QDRANT_HOST: str = "localhost"
+    QDRANT_PORT: int = 6333
+    QDRANT_COLLECTION: str = "agentic_rag"
 
     # Vector Database & Retrieval Settings
     PINECONE_API_KEY: Optional[str] = None

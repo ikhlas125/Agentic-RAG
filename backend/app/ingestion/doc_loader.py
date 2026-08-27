@@ -70,11 +70,6 @@ def load_folder(folder=None, index: bool = True) -> FileAdapter:
     register_db(adapter)  # after the loop, so the schema is complete
     return adapter
 
-<<<<<<< HEAD
 
-
-adapter = load_folder("storage/documents/Legal", index=True)
-=======
 if __name__ == "__main__":
     load_folder(settings.storage_dir, True)
->>>>>>> 5ec17b4db0079354cbeddafb0068e1e1ab503032

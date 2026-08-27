@@ -1,12 +1,21 @@
 {
   "doc_sources": [
     {
+      "file_id": "b6d142b2-c239-5dea-9ec0-ae494c1f30af",
+      "source": "NASDAQ_ATSG_2022.pdf",
+      "artifact_name": "NASDAQ_ATSG_2022",
+      "sha256": "51e68d24fb7fb7a4c94c146b3d2a59379d0684b05f60bb0c4634003f9ed8ebcb",
+      "doc_type": "financial_data",
+      "summary": "The document titled 'NASDAQ_ATSG_2022.pdf' provides a comprehensive overview of the financial performance and operational metrics of ATSG for the fiscal year 2022. It includes detailed financial statements, performance analyses, and insights into market positioning, which could answer questions regarding the company's profitability, revenue generation, and investment potential.",
+      "pages": 111
+    },
+    {
       "file_id": "01c6496f-f811-5f0e-bfa4-017c500c79a8",
       "source": " 064-19 Non Disclosure Agreement 2019.pdf",
       "artifact_name": " 064-19 Non Disclosure Agreement 2019",
       "sha256": "1d8e74e43c56e06565918966a127984e207a9e337e4cd6cb00476ca08a2dd81f",
       "doc_type": "legal_data",
-      "summary": "This document is a Non-Disclosure Agreement (NDA) between JEA and another party to protect sensitive and confidential information regarding a specific transaction. It outlines the obligations of the parties concerning the handling of confidential information in compliance with Florida Sunshine Laws and federal regulations.",
+      "summary": "This Non-Disclosure Agreement outlines the terms under which JEA and the Recipient will protect sensitive and confidential information related to a specific transaction. It addresses the legal obligations imposed by Florida Sunshine Laws regarding public access to governmental records, particularly concerning information that might compromise the security of utility operations.",
       "pages": 6
     },
     {
@@ -15,7 +24,7 @@
       "artifact_name": "01_Bosch-Automotive-Service-Solutions-Mutual-Non-Disclosure-Agreement-7-12-17",
       "sha256": "af837571ee7013a91c4789283784806e5c82274faa646dae9687125499aa5f18",
       "doc_type": "legal_data",
-      "summary": "The document is a Mutual Non-Disclosure Agreement (NDA) between Bosch Automotive Service Solutions and another party for the purpose of sharing confidential information related to a potential business relationship. It outlines the definition of Confidential Information, the obligations of the Recipient regarding the use and protection of such information, and the period during which confidentiality must be maintained.",
+      "summary": "This document is a Mutual Non-Disclosure Agreement (NDA) between Bosch Automotive Service Solutions Inc. and another party, outlining the terms for sharing confidential information related to a potential business relationship. It specifies the definition of Confidential Information, the obligations of the parties regarding its use and protection, and the duration of confidentiality.",
       "pages": 4
     },
     {
@@ -24,7 +33,7 @@
       "artifact_name": "09-24-2019-04-25-05-3914910473",
       "sha256": "05d495394d2615bfba6c70ca9b7c6288e3fb8c0ed76a67be14ca21527b8eef84",
       "doc_type": "legal_data",
-      "summary": "The document is a Confidentiality and Non-Disclosure Agreement (NDA) related to the OISAIR Project, intended for the exchange of confidential information between a research institution and a company for the purpose of assessing potential business collaboration. It outlines the definition of confidential information, the parties involved, and the conditions under which this information can be used.",
+      "summary": "This document is a Two-Way Confidentiality and Non-Disclosure Agreement between a research institution and a company, outlining the exchange of confidential information for potential business collaboration. It addresses the definition and treatment of confidential information and may answer questions about the obligations of both parties in maintaining confidentiality and the scope of permissible use of shared information.",
       "pages": 5
     },
     {
@@ -33,7 +42,7 @@
       "artifact_name": "118.3-Non-disclosure-agreement",
       "sha256": "cb07f3d4ecb5d028371a743519f4f3062dc91382583bda18440ec915e77328d2",
       "doc_type": "legal_data",
-      "summary": "This document is a non-disclosure agreement (NDA) between an individual and the Frodsham Town Council, governing the disclosure and protection of confidential information related to future land use recommendations for a decommissioned play area. It outlines the Recipient's obligations regarding the use and security of the Confidential Information, exceptions to confidentiality, and the governing law for any disputes. Questions this document could answer include what information is considered confidential, the duration of confidentiality obligations, and the legal remedies available in case of a breach.",
+      "summary": "This document is a non-disclosure agreement (NDA) between an individual recipient and Frodsham Town Council, outlining the terms under which confidential information will be shared regarding the future land use of a decommissioned play area. It addresses the obligations of the recipient to maintain confidentiality, the limitations on the use of the disclosed information, and the legal framework governing the agreement.",
       "pages": 1
     },
     {
@@ -42,7 +51,7 @@
       "artifact_name": "17.04.01%20BPS%20Non-Disclosure%20and%20Data%20Sharing%20Agreement%20-%20Transportation%20Challenge%20vF",
       "sha256": "177f5d793563102dc5df3a8adf5a34da96c999b00b7c19d75a6874e13f57e01a",
       "doc_type": "legal_data",
-      "summary": "This document is a Confidentiality and Non-Disclosure Agreement between a vendor and Boston Public Schools regarding the Transportation Challenge event in 2017. It outlines the usage and protection of student routing information and the responsibilities of both parties concerning the handling of this confidential data.",
+      "summary": "This document is a Confidentiality and Non-Disclosure Agreement between a vendor and the Boston Public Schools regarding the handling of confidential transportation data for a specific challenge event. It outlines the terms under which the vendor may access sensitive student routing information and the expectations for confidentiality. Questions it could answer include the extent of information shared, the obligations of the parties involved, and the duration of the confidentiality obligations.",
       "pages": 7
     },
     {
@@ -51,83 +60,16 @@
       "artifact_name": "183",
       "sha256": "1959f4c5f149e5a68696f1f6163d3abbd540f0521c47c5872ad97e2230fb37e7",
       "doc_type": "legal_data",
-      "summary": "This document is a Confidentiality (Non-Disclosure) Agreement between BROOKS' BOTTLING COMPANY and a CLIENT to ensure the protection of confidential information shared during their discussions for a business relationship. It outlines the mutual obligations of both parties regarding the handling of confidential information, including proprietary formulations and processing procedures, and specifies that no disclosure is permitted without written consent from the CLIENT.",
+      "summary": "This document is a Confidentiality (Non-Disclosure) Agreement between Brooks' Bottling Company, LLC and a client, outlining the terms under which confidential personal, financial, and product information will be shared and protected. It addresses the obligations of both parties regarding the handling of proprietary information and includes clauses for confidentiality and disclosure.",
       "pages": 4
     },
     {
-<<<<<<< HEAD
-      "file_id": "f7",
-      "doc_type": "contract",
-      "summary": "Unilateral Non-Disclosure Agreement between Nordic Knowledge Partners ApS (NKP) and a subject-matter expert, covering contact persons and definitions related to expert consultation projects.",
-      "filename": "59b1148ff6952b0001bdbedc_20170907_non_20disclosure_20agreement_expert.pdf"
-    },
-    {
-      "file_id": "01c6496f-f811-5f0e-bfa4-017c500c79a8",
-      "source": " 064-19 Non Disclosure Agreement 2019.pdf",
-      "artifact_name": " 064-19 Non Disclosure Agreement 2019",
-      "sha256": "1d8e74e43c56e06565918966a127984e207a9e337e4cd6cb00476ca08a2dd81f",
-      "doc_type": "legal_data",
-      "summary": "This document is a Non-Disclosure Agreement (NDA) between JEA and a Recipient, which outlines the obligations of confidentiality concerning sensitive information related to a specific transaction. It addresses the protection of confidential and proprietary information in compliance with Florida Sunshine Laws and federal regulations, specifying exemptions related to security measures and information technology.",
-      "pages": 6
-    },
-    {
-      "file_id": "d48f30af-8a9d-5a96-b294-5d9d4e0e6c01",
-      "source": "01_Bosch-Automotive-Service-Solutions-Mutual-Non-Disclosure-Agreement-7-12-17.pdf",
-      "artifact_name": "01_Bosch-Automotive-Service-Solutions-Mutual-Non-Disclosure-Agreement-7-12-17",
-      "sha256": "af837571ee7013a91c4789283784806e5c82274faa646dae9687125499aa5f18",
-      "doc_type": "legal_data",
-      "summary": "This document is a Mutual Non-Disclosure Agreement (NDA) between Bosch Automotive Service Solutions Inc. and another party, outlining the terms of confidentiality related to discussions of a potential business relationship. It defines what constitutes Confidential Information and stipulates the obligations of the parties to protect and limit the use of such information.",
-      "pages": 4
-    },
-    {
-      "file_id": "92bfd672-33a1-56f6-bddd-882f7e6c0463",
-      "source": "09-24-2019-04-25-05-3914910473.pdf",
-      "artifact_name": "09-24-2019-04-25-05-3914910473",
-      "sha256": "05d495394d2615bfba6c70ca9b7c6288e3fb8c0ed76a67be14ca21527b8eef84",
-      "doc_type": "legal_data",
-      "summary": "This document is a Confidentiality and Non-Disclosure Agreement (NDA) between a research institution and a company regarding the exchange of confidential information for potential business collaboration in a specified field. It outlines the definitions, scope of confidential information, and conditions for its use, and it could answer questions related to confidentiality terms, obligations of the parties, and usage rights of shared information.",
-      "pages": 5
-    },
-    {
-      "file_id": "78866e6d-4f73-5ab0-a569-95a1f4bdde73",
-      "source": "118.3-Non-disclosure-agreement.pdf",
-      "artifact_name": "118.3-Non-disclosure-agreement",
-      "sha256": "cb07f3d4ecb5d028371a743519f4f3062dc91382583bda18440ec915e77328d2",
-      "doc_type": "legal_data",
-      "summary": "This document is a non-disclosure agreement (NDA) outlining the obligations of a recipient regarding the handling of confidential information provided by Frodsham Town Council. It specifies that the recipient must not use the information for purposes outside the agreed-upon scope and must keep it secure, with exceptions for public domain information and legal disclosures. Questions it could answer include how confidential information should be handled and the consequences of breaching the agreement.",
-      "pages": 1
-    },
-    {
-      "file_id": "29fe4ea7-d938-5548-913d-5bb45662030d",
-      "source": "17.04.01%20BPS%20Non-Disclosure%20and%20Data%20Sharing%20Agreement%20-%20Transportation%20Challenge%20vF.pdf",
-      "artifact_name": "17.04.01%20BPS%20Non-Disclosure%20and%20Data%20Sharing%20Agreement%20-%20Transportation%20Challenge%20vF",
-      "sha256": "177f5d793563102dc5df3a8adf5a34da96c999b00b7c19d75a6874e13f57e01a",
-      "doc_type": "legal_data",
-      "summary": "This document is a Non-Disclosure Agreement (NDA) between a vendor and the Boston Public Schools regarding the confidential handling of student routing information for a transportation data challenge. It outlines the responsibilities and expectations of both parties concerning the use and protection of sensitive data, as well as the authorized individuals who can access this information.",
-      "pages": 7
-    },
-    {
-      "file_id": "b71ec41d-02b1-5ea2-99c3-43a609bc6790",
-      "source": "183.pdf",
-      "artifact_name": "183",
-      "sha256": "1959f4c5f149e5a68696f1f6163d3abbd540f0521c47c5872ad97e2230fb37e7",
-      "doc_type": "legal_data",
-      "summary": "This document is a Confidentiality (Non-Disclosure) Agreement between BROOKS’ Bottling Company and a CLIENT, outlining the terms under which confidential information will be shared and protected during discussions of a potential business relationship. It covers aspects such as the definition of confidential information, obligations regarding its confidentiality, and conditions under which disclosure is permitted.",
-      "pages": 4
-    },
-    {
-=======
->>>>>>> 5ec17b4db0079354cbeddafb0068e1e1ab503032
       "file_id": "3a90ec25-40ec-5ea0-96d5-42cea135dc41",
       "source": "2_waycda.pdf",
       "artifact_name": "2_waycda",
       "sha256": "9a860c2a2a148043381bf8ed7cbd6cf56f07fe2ee3159ffda6e8c7bca0a881e8",
       "doc_type": "legal_data",
-<<<<<<< HEAD
-      "summary": "This document is a confidentiality agreement, specifically a two-way non-disclosure agreement between the University of Bristol and another party. It outlines the terms and conditions for the protection of confidential information exchanged between the parties, including obligations regarding usage, disclosure, and the handling of proprietary materials.",
-=======
-      "summary": "This document is a Non-Disclosure Agreement (NDA) between the University of Bristol and another party, aimed at protecting confidential information exchanged between them. It outlines the obligations of the receiving party regarding the handling, use, and disclosure of the disclosed confidential information, addressing concerns such as the safeguarding of proprietary materials and the conditions under which information can be shared.",
->>>>>>> 5ec17b4db0079354cbeddafb0068e1e1ab503032
+      "summary": "This document is a Non-Disclosure Agreement (NDA) between the University of Bristol and another party, regulating the exchange and treatment of confidential information, particularly in a specified field. It outlines the responsibilities of the receiving party in maintaining confidentiality, usage restrictions, and conditions for disclosure. Questions it could answer include the protections in place for sensitive information shared between parties and the obligations of each party in the agreement.",
       "pages": 2
     },
     {
@@ -136,11 +78,7 @@
       "artifact_name": "3511_standard_nda",
       "sha256": "8995a933e488084ae5a007329186704468fcc8a4f6e9ee4445dac73a364bcc7d",
       "doc_type": "legal_data",
-<<<<<<< HEAD
-      "summary": "This document is a Confidentiality and Non-Disclosure Agreement between NASDAQ OMX and a recipient, outlining the obligations of the recipient regarding the handling of confidential information provided during a project. It addresses the nature of the confidential information, the required degree of care in its protection, and the restrictions on disclosure. Questions it could answer include what constitutes confidential information, how it should be protected, and the responsibilities of the recipient regarding its use.",
-=======
-      "summary": "This document is a Confidentiality and Non-Disclosure Agreement (NDA) between The NASDAQ OMX Group, Inc. and an unnamed Recipient. It outlines the terms under which the Recipient will access and handle confidential information related to NASDAQ OMX and its affiliates, emphasizing the protection and treatment of such information.",
->>>>>>> 5ec17b4db0079354cbeddafb0068e1e1ab503032
+      "summary": "This document is a Confidentiality and Non-Disclosure Agreement between NASDAQ OMX and a recipient, outlining the handling of confidential information shared during their collaboration on a project. It establishes the obligations of the recipient to protect the confidentiality of any sensitive information and the conditions under which it can be disclosed.",
       "pages": 3
     },
     {
@@ -149,11 +87,7 @@
       "artifact_name": "36C25520Q0076-013",
       "sha256": "d6ce8ab5411752fbc5ba263178c51382fb59de0a20b4a75f81860e0456ff6084",
       "doc_type": "legal_data",
-<<<<<<< HEAD
-      "summary": "This document is a Non-Disclosure Agreement between the United States Department of Veterans Affairs (VA) and a contractor, outlining the confidentiality obligations regarding access to VA data, software, and systems. It specifies the responsibilities of the contractor in protecting sensitive information and ensures that any access to VA property is done with care to prevent unauthorized disclosure or misuse.",
-=======
-      "summary": "This document is a Non-Disclosure Agreement (NDA) between the United States Department of Veterans Affairs and a contractor, outlining the confidentiality obligations related to accessing VA data and systems. It addresses the responsibilities of the contractor in handling sensitive information and specifies the legal ownership of the data and software accessed during the contract.",
->>>>>>> 5ec17b4db0079354cbeddafb0068e1e1ab503032
+      "summary": "This document is a Non-Disclosure Agreement (NDA) between the United States Department of Veterans Affairs and a contractor, outlining the confidentiality obligations regarding sensitive VA information and systems. It describes the responsibilities of the contractor in handling VA data and emphasizes that all accessed information remains the property of the VA, raising questions about the legal ramifications of data misuse and compliance requirements.",
       "pages": 5
     },
     {
@@ -162,11 +96,7 @@
       "artifact_name": "426-2017_Appendix_C-Sample_Non-Disclosure_Agreement",
       "sha256": "c87390751618493f3c9a392820b641ec808d43289276e3914b3e6f9f750a8f00",
       "doc_type": "legal_data",
-<<<<<<< HEAD
-      "summary": "This document is a Sample Non-Disclosure Agreement (NDA) for parties seeking to receive confidential information from The City of Winnipeg in relation to a proposal for professional consulting services. It outlines the definitions of key terms, the permitted use of the confidential information, and the restrictions placed on the recipient to protect that information. Questions it could answer include details on confidentiality obligations, permissible uses of information, and the scope of restrictions for the parties involved.",
-=======
-      "summary": "This document is a sample Non-Disclosure Agreement (NDA) between a confidant and The City of Winnipeg regarding the confidentiality of information related to a Request for Proposal (RFP) for consulting services. It outlines the definitions of key terms, the permitted use of confidential information, and the restrictions on disclosure, which could answer questions about how sensitive information is handled in contractual agreements.",
->>>>>>> 5ec17b4db0079354cbeddafb0068e1e1ab503032
+      "summary": "This document is a Sample Non-Disclosure Agreement (NDA) intended for use in a professional consulting context by The City of Winnipeg concerning a specific Request for Proposal (RFP) for an evaluation study. It outlines definitions of key terms, stipulates access and use of Confidential Information, and sets restrictions on disclosure to third parties. It answers questions about confidentiality obligations and the handling of sensitive information in a contractual context.",
       "pages": 3
     },
     {
@@ -175,11 +105,7 @@
       "artifact_name": "5-Appendix-Non-Disclosure-Agreement-Mutual",
       "sha256": "2ef43671fb82c7d7b595cfa1848229f9c7c55d5ba252479ee60cdf9d6d8d3935",
       "doc_type": "legal_data",
-<<<<<<< HEAD
-      "summary": "This document is a Mutual Non-Disclosure Agreement (NDA) outlining the terms under which two parties agree to exchange confidential information while exploring potential cooperation. It defines what constitutes Confidential Information, the obligations of the Receiving Party, and the exceptions to confidentiality. Questions it could answer include what information is protected, the duration of confidentiality, and the legal recourse in case of a breach.",
-=======
-      "summary": "This document is a Mutual Non-Disclosure Agreement outlining the terms under which two parties can disclose and protect confidential information while exploring potential cooperation. It defines what constitutes confidential information, exclusions, and obligations of the parties to maintain confidentiality. It could answer questions regarding the scope of confidentiality, the handling of disclosed information, and the legal obligations of each party involved.",
->>>>>>> 5ec17b4db0079354cbeddafb0068e1e1ab503032
+      "summary": "This document is a Mutual Non-Disclosure Agreement (NDA) outlining the terms under which two parties agree to share confidential information while exploring potential cooperation. It defines what constitutes Confidential Information, stipulates exceptions for disclosure, and emphasizes the protection of sensitive business information.",
       "pages": 3
     },
     {
@@ -188,11 +114,7 @@
       "artifact_name": "5-NSK-Confidentiality-Agreement-for-Suppliers",
       "sha256": "cad57d534c2445d5783f619fef31a1fea60f36d11bebfaa988db2d2b5375cd79",
       "doc_type": "legal_data",
-<<<<<<< HEAD
-      "summary": "This document is a Non-Disclosure Agreement (NDA) between NSK Europe Limited and a supplier, outlining the terms under which Confidential Information will be shared during discussions about a business relationship. It defines key terms such as 'Confidential Information', 'Disclosing Party', 'Receiving Party', and sets the framework for protecting sensitive information exchanged during negotiations.",
-=======
-      "summary": "This document is a Non-Disclosure Agreement (NDA) between NSK Europe Limited and a supplier, aimed at protecting the confidentiality of information exchanged during discussions related to a specific business purpose. It defines terms such as 'Confidential Information' and outlines the obligations of the parties regarding the handling of such information.",
->>>>>>> 5ec17b4db0079354cbeddafb0068e1e1ab503032
+      "summary": "This document is a Non-Disclosure Agreement (NDA) between NSK Europe Limited and a supplier, intended to govern the exchange of confidential information during discussions related to a business relationship. It defines key terms such as 'Confidential Information' and outlines the obligations of both parties concerning the disclosure and use of confidential data.",
       "pages": 5
     },
     {
@@ -201,11 +123,7 @@
       "artifact_name": "54c808c1b20e4490b1300ad2ce3b9649",
       "sha256": "9934205f1fa8c94ea3cba9d5527e0bc3a23ce085b50da2df7e1a7a1f96537c72",
       "doc_type": "legal_data",
-<<<<<<< HEAD
-      "summary": "This document is a Non Disclosure Agreement (NDA) between the Ministry of Defence of the Kingdom of Norway and Gripen International AB, pertaining to the exchange of confidential information related to the Gripen aircraft and associated projects. It outlines the definition of confidential information and the obligations of the parties concerning its protection, which could answer questions regarding information sharing protocols and confidentiality obligations.",
-=======
-      "summary": "This document is a Non Disclosure Agreement (NDA) between the Ministry of Defence of the Kingdom of Norway and Gripen International AB, detailing the terms for the exchange of confidential information related to the Gripen aircraft and associated projects. It could answer questions regarding the confidentiality obligations of the parties, the definition of confidential information, and the conditions under which information may be shared.",
->>>>>>> 5ec17b4db0079354cbeddafb0068e1e1ab503032
+      "summary": "This document is a Non Disclosure Agreement (NDA) between the Ministry of Defence of the Kingdom of Norway and Gripen International AB, aimed at maintaining the confidentiality of shared information related to the Gripen aircraft and associated projects. It outlines the definition of confidential information and the obligations of the parties involved regarding its protection, which could answer questions about confidentiality protocols and the scope of information sharing between the parties.",
       "pages": 5
     },
     {
@@ -214,11 +132,7 @@
       "artifact_name": "59b1148ff6952b0001bdbedc_20170907_non%20disclosure%20agreement_expert",
       "sha256": "52cb006b293f11b9648adbc5be5ccf808b4fde3dd206b5a975529d6d74e9f65a",
       "doc_type": "legal_data",
-<<<<<<< HEAD
-      "summary": "This document is a Unilateral Non-Disclosure Agreement (NDA) between Nordic Knowledge Partners ApS and a subject-matter expert intended to protect the confidentiality of information shared between the parties. It outlines how communication should be conducted and includes contact information for both parties, which can answer questions regarding confidentiality obligations and the protocol for notifications.",
-=======
-      "summary": "This document is a Unilateral Non-Disclosure Agreement (NDA) between Nordic Knowledge Partners ApS and a subject-matter expert. It outlines the conditions under which confidential information may be disclosed and the responsibilities of both parties regarding the protection of such information.",
->>>>>>> 5ec17b4db0079354cbeddafb0068e1e1ab503032
+      "summary": "This document is a Unilateral Non-Disclosure Agreement (NDA) between Nordic Knowledge Partners ApS and a subject-matter expert. It outlines the terms under which confidential information will be shared and the obligations of the parties involved regarding the protection of that information.",
       "pages": 9
     },
     {
@@ -227,37 +141,8 @@
       "artifact_name": "5bfbcabf0627e70bdcfc5b32_nda-ready4s",
       "sha256": "1b72ec1378117db5e591ac6c302ab57476685c741e7d47b9930dd528897297d0",
       "doc_type": "legal_data",
-<<<<<<< HEAD
-      "summary": "This document is a Mutual Non-disclosure and Confidentiality Agreement between Ready4S, Ltd and a Client, outlining the terms under which confidential information may be shared during discussions about a potential business relationship. It defines key terms such as 'Confidential Information' and establishes the roles of Disclosing and Receiving Parties, addressing issues of information protection and confidentiality obligations.",
+      "summary": "This document is a Mutual Non-disclosure and Confidentiality Agreement between Ready4S, Ltd and the Client, facilitating discussions about a potential business relationship while protecting confidential information. It defines key terms and outlines the responsibilities of both parties in relation to the handling of proprietary and confidential information.",
       "pages": 6
-    },
-    {
-      "file_id": "71a93a00-f75d-55c4-aef2-06b6582c60b1",
-      "source": "ml_book-5.pdf",
-      "artifact_name": "ml_book-5",
-      "sha256": "41c3c05091caf570f17109de167b32bc8cb7ffe9befd42714fa694ff0606dc22",
-      "doc_type": "other",
-      "summary": "This document covers Chapter 5 of a book dedicated to Support Vector Machines (SVMs) in the context of Machine Learning. It introduces the concepts of linear SVM classification, explaining how SVMs can effectively separate data classes and their advantages in handling small to medium-sized datasets.",
-      "pages": 22
-    },
-    {
-=======
-      "summary": "This document is a Mutual Non-disclosure and Confidentiality Agreement between Ready4S, Ltd and a Client, designed to protect confidential information exchanged during discussions of a potential business relationship. It outlines definitions of Confidential Information, the roles of Disclosing and Receiving Parties, and sets the framework for confidentiality obligations.",
-      "pages": 6
-    },
-    {
->>>>>>> 5ec17b4db0079354cbeddafb0068e1e1ab503032
-      "file_id": "b6d142b2-c239-5dea-9ec0-ae494c1f30af",
-      "source": "NASDAQ_ATSG_2022.pdf",
-      "artifact_name": "NASDAQ_ATSG_2022",
-      "sha256": "51e68d24fb7fb7a4c94c146b3d2a59379d0684b05f60bb0c4634003f9ed8ebcb",
-      "doc_type": "financial_data",
-<<<<<<< HEAD
-      "summary": "The document appears to provide comprehensive financial information regarding ATSG for the year 2022, including performance metrics, financial statements, and analysis of operational results. It could answer questions related to the company's revenue, expenses, profits, and overall financial health during that fiscal year.",
-      "pages": 111
-=======
-      "summary": "The document appears to provide detailed financial information related to ATSG for the year 2022, including financial statements, performance metrics, and potentially insights into business operations. It could answer questions regarding ATSG’s financial health, revenue sources, and overall performance in the market.",
-      "pages": 111
     },
     {
       "file_id": "955b89e3-31ab-5c78-9361-1a094f63eb2c",
@@ -265,23 +150,12 @@
       "artifact_name": "doc",
       "sha256": "1d13a76168650bb5efb42f29c6da81aa673e44217d082357ec0815afc70abf2e",
       "doc_type": "financial_data",
-      "summary": "The document is a Form 10-K annual report for Microsoft Corporation filed with the SEC, covering the fiscal year that ended on June 30, 2025. It includes key information on the company's financial performance, securities registered, and compliance with reporting requirements, which can answer questions related to Microsoft's financial health, stock offerings, and regulatory adherence.",
+      "summary": "This document is Microsoft's Form 10-K annual report, detailing the company's financial performance and compliance with SEC regulations for the fiscal year ended June 30, 2025. It includes information on their registered securities, filing status, and corporate governance, which can help answer questions about the company's financial health, regulatory compliance, and operational status.",
       "pages": 158
->>>>>>> 5ec17b4db0079354cbeddafb0068e1e1ab503032
     }
   ],
   "db_sources": [
     {
-<<<<<<< HEAD
-      "db_id": "sqlite1",
-      "tables": [
-        "returns"
-      ],
-      "schema_summary": "Single 'returns' table recording product returns (return_id, sale_id, reason, return_date); sample data includes 2 returns referencing sale_ids 2 and 6."
-    },
-    {
-=======
->>>>>>> 5ec17b4db0079354cbeddafb0068e1e1ab503032
       "table_id": "da11a78d-f82c-52d0-bf77-c7de893729bc",
       "name": "customers",
       "schema": "main",
@@ -309,11 +183,7 @@
           "type": "DATE"
         }
       ],
-<<<<<<< HEAD
-      "summary": "The 'customers' table contains information about customers, including their unique identifiers, names, cities of residence, and the dates they signed up. It can answer questions related to customer demographics, geographic distribution, and trends in customer acquisition over time."
-=======
-      "summary": "The 'customers' table holds information about individual customers, including their unique ID, name, city of residence, and the date they signed up. It could be used to answer questions related to customer demographics, the distribution of customers across cities, and trends in customer signups over time."
->>>>>>> 5ec17b4db0079354cbeddafb0068e1e1ab503032
+      "summary": "The 'customers' table contains information about customers, including their IDs, names, cities, and signup dates. It can be used to analyze customer demographics, track signup trends over time, and generate insights into customer distribution across different cities."
     },
     {
       "table_id": "695210d0-9c39-53ae-bfae-f853f20752de",
@@ -343,11 +213,7 @@
           "type": "DOUBLE"
         }
       ],
-<<<<<<< HEAD
-      "summary": "The 'products' table stores information about various products, including their ID, name, category, and price. This table can help answer questions regarding product availability, categorization, pricing, and comparisons between different products."
-=======
-      "summary": "The 'products' table contains a list of products available for sale, along with their IDs, names, categories, and prices. This table can answer questions related to product inventory, pricing analysis, and category distributions."
->>>>>>> 5ec17b4db0079354cbeddafb0068e1e1ab503032
+      "summary": "The 'products' table contains data about various products, including their IDs, names, categories, and prices. It can be used to answer questions related to product availability, pricing comparisons, and category-specific analytics."
     },
     {
       "table_id": "9c3faf3f-4760-5598-9a92-5cf213beaba3",
@@ -381,11 +247,7 @@
           "type": "DATE"
         }
       ],
-<<<<<<< HEAD
-      "summary": "The 'sales' table stores data on individual sales transactions, including details such as sale ID, customer ID, product ID, quantity sold, and the date of sale. It can be used to analyze sales trends, customer purchasing behavior, and product performance over time."
-=======
-      "summary": "The 'sales' table records individual sales transactions, capturing details such as the unique sale ID, customer ID, product ID, quantity sold, and the date of sale. This table can answer questions related to sales performance, customer purchasing behavior, and product demand over time."
->>>>>>> 5ec17b4db0079354cbeddafb0068e1e1ab503032
+      "summary": "The 'sales' table records individual sales transactions, including details such as sale ID, customer ID, product ID, quantity sold, and the date of sale. It can be used to analyze sales trends, customer purchasing behavior, and inventory management."
     },
     {
       "table_id": "a7caa0e9-7163-5927-a1b4-23c1bbcbd013",
@@ -415,11 +277,7 @@
           "type": "DATE"
         }
       ],
-<<<<<<< HEAD
-      "summary": "The 'returns' table records information about product returns, including the return ID, sale ID associated with each return, the reason for the return, and the date of return. This table could be used to analyze patterns in return reasons, track return rates over time, and identify issues related to specific products or sales."
-=======
-      "summary": "The 'returns' table holds information about product returns, including unique identifiers for each return, the associated sale, the reason for the return, and the date of the return. It could answer questions related to return trends, reasons for returns, and insights into product issues or customer satisfaction."
->>>>>>> 5ec17b4db0079354cbeddafb0068e1e1ab503032
+      "summary": "The 'returns_dump.returns' table contains records of product returns, detailing each return's identifier, associated sale, reason for return, and the date it occurred. It can help answer questions about the frequency and reasons for product returns, as well as trends over time."
     }
   ]
 }

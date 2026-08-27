@@ -1,5 +1,4 @@
 import json
-import os
 import uuid
 
 from fastembed import SparseTextEmbedding
@@ -9,18 +8,27 @@ from qdrant_client.http.models import (
     PointStruct, SparseVector,
 )
 
-from app.core.config import OUTPUT_DIR
+from app.core.config import OUTPUT_DIR, settings
 from app.ingestion.embedder import embed_texts
 
-_COLLECTION = "agentic_rag"
+_COLLECTION = settings.QDRANT_COLLECTION
 _VECTOR_SIZE = 3072
 
 _ID_NAMESPACE = uuid.NAMESPACE_DNS
 
-_qdrant = QdrantClient(
-    host=os.environ.get("QDRANT_HOST", "localhost"),
-    port=int(os.environ.get("QDRANT_PORT", 6333)),
-)
+
+def _build_client() -> QdrantClient:
+    """Qdrant Cloud when QDRANT_URL is set, otherwise a local host/port instance."""
+    if settings.QDRANT_URL:
+        return QdrantClient(
+            url=settings.QDRANT_URL,
+            api_key=settings.QDRANT_API_KEY,
+            timeout=60,  # cloud round-trips are slower than localhost
+        )
+    return QdrantClient(host=settings.QDRANT_HOST, port=settings.QDRANT_PORT)
+
+
+_qdrant = _build_client()
 _sparse_model = SparseTextEmbedding(model_name="Qdrant/bm25")
 
 
