@@ -18,13 +18,13 @@ Read every file under `backend/app/{nodes,retrieval,ingestion,core,schemas,llm,h
 | `backend/app/retrieval/base_store.py`, `sql_store.py`, `file_store.py` | Full `DataAdapter` family (SQLAlchemy + DuckDB), used by DBNode. |
 | `backend/app/helper/sql_guard.py` | Read-only SQL validation boundary — solid. |
 | `backend/app/llm/personas.py`, `provider_registry.py` | Persona = data (system prompt) + LLM binding via `get_model_for_persona()`. |
-| `backend/app/core/intent_registry.py` | Intent vocabulary (`mathematical`/`factual`/`conversational`), classifier guidance text, and `INTENT_ROUTES` — the extensibility hook the plan calls for. |
+| `backend/app/nodes/router_node.py` | **Now implemented** (post-dated this document's original 2026-08-25 snapshot) — as the `ResolutionOutput` fan-out classifier from `docs/router-node-design.md`, not the intent classifier this document originally described below. |
 | `backend/app/ingestion/pdf_processor.py`, `chunk_metadata.py`, `embedder.py`, `vector_indexer.py` | Solid PDF → markdown → header-based chunking → hybrid (dense+sparse) Qdrant indexing pipeline. Each chunk's payload carries `content`, `token_count`, `page_start`, `page_end`, `content_type` (text/table/mixed), `sections` (breadcrumb), and header levels. |
 | `backend/app/retrieval/vector_store.py` | `hybrid_search(query, top_k, content_type=None)` — dense+sparse RRF fusion against Qdrant. **This is the retrieval primitive DocNode should call.** |
-| `backend/app/schemas/query_schemas.py` | Already defines `DocSearchArgs` (a query-rewrite structured-output shape, mirroring `SQLQueryArgs`) even though nothing consumes it yet — this tells us the intended DocNode shape. |
+| `backend/app/schemas/query_schemas.py` | Defines `DocSearchArgs` (a query-rewrite structured-output shape, mirroring `SQLQueryArgs`) — now dead: `router_node.py`'s `ResolutionOutput.Queries`/`HyDe` took over that job, see §3.1. |
 
 **Empty (0 bytes) — the entire orchestration layer:**
-`nodes/doc_node.py`, `nodes/router_node.py`, `nodes/math_node.py`, `nodes/persona_selector.py`, `nodes/suggestion_node.py`, `core/graph_state.py`, `core/graph_builder.py`, `schemas/citation_schemas.py`, `schemas/persona_schemas.py`, `schemas/trace_schemas.py`, `tracing/*.py`, `main.py`, all of `api/routes_*.py`, `compute/*.py`.
+`nodes/doc_node.py`, `nodes/math_node.py`, `nodes/persona_selector.py`, `nodes/suggestion_node.py`, `core/graph_builder.py`, `schemas/citation_schemas.py`, `schemas/persona_schemas.py`, `schemas/trace_schemas.py`, `tracing/*.py`, `main.py`, all of `api/routes_*.py`, `compute/*.py`. (`core/graph_state.py` is also no longer empty — it now defines the real `State` TypedDict, see §4.)
 
 **Partially started:** `nodes/answer_formatter.py` has a docstring + a `CITATION_RULE` prompt constant already written, then `raise NotImplementedError`. That constant is a strong signal of intent: AnswerFormatter is meant to be the place where the LLM actually synthesizes prose with citations — not DocNode.
 
@@ -41,8 +41,8 @@ Keep the topology exactly as specified in `docs/architecture-plan.md` §5, and d
 | Node | Responsibility | Reads from state | Writes to state |
 |---|---|---|---|
 | **PersonaSelector** | Resolve persona key → `Persona` + bind LLM via `provider_registry.get_model_for_persona`. Runs first so every downstream node has `state["llm"]`. | `persona_key` | `persona`, `llm` |
-| **RouterNode** | Classify intent (`mathematical`/`factual`/`conversational`) via structured output using `intent_registry.CLASSIFIER_GUIDANCE`; look up `INTENT_ROUTES` to decide which node(s) fire. | `query`, `llm` | `intent`, `route` |
-| **DocNode** | Rewrite query (optional) → hybrid search → relevance filter → citation packaging. *No prose synthesis here.* | `query`, `llm` | `doc_chunks`, `citations` |
+| **RouterNode** *(built)* | One structured-output call (`ResolutionOutput`) decides `needs_rag`/`needs_db` — independent booleans, not a single intent — plus per-branch args (`HyDe`, `Queries`, `content_type`, `doc_type` for RAG; a draft `SQL_Query` for DB). `graph_builder.py` fans out on the two booleans as separate conditional edges; both can fire in the same step. Supersedes the intent/`INTENT_ROUTES` design this row used to describe — see `docs/router-node-design.md`. | `query`, `llm` | `resolution` |
+| **DocNode** | Hybrid search over `resolution.Queries`/`HyDe` (already rewritten by RouterNode — no query-rewrite step of its own) → relevance filter → citation packaging. *No prose synthesis here.* | `resolution` | `doc_chunks`, `citations` |
 | **DBNode** *(built)* | Draft SQL against the bound adapter, retry on error. | `query`, `llm`, `adapter` | `db_result`, `db_attempts` |
 | **MathNode** | Pure-Python computation (moving average / trend / threshold) over `db_result` rows — no LLM. | `db_result`, `query` | `math_result` |
 | **AnswerFormatter** | The single synthesis point. Calls the persona LLM once with `CITATION_RULE` + whatever of `doc_chunks`/`db_result`/`math_result` is populated, produces grounded prose, then runs the **lightweight grounding check** (see §3.5) and attaches `citations`/screenshot refs. | `persona`, `llm`, `doc_chunks`, `citations`, `db_result`, `math_result` | `answer`, `citations` (finalized) |
@@ -56,11 +56,13 @@ This keeps every node's job single-purpose and matches the plan's edges: `Person
 
 Modeled directly on `db_node.py`'s shape (module-level helper + thin graph entrypoint), so the two nodes read as siblings.
 
-### 3.1 Stage A — Query drafting (optional, cheap)
-Use the LLM with structured output on the already-defined `DocSearchArgs` to turn a conversational question into a clean search string — exactly how `db_node.generate_sql` uses `SQLQueryArgs`. This is a single extra LLM call; skip it (fall back to `state["query"]` verbatim) if you want to cut latency early on — the schema being pre-defined suggests it's the intended v1 shape, so keep it, but it's the first thing to cut if it's not earning its cost.
+### 3.1 Stage A — Query drafting (superseded — now done by RouterNode)
+`router_node.py` already turns the raw question into `resolution.Queries` (1-3 search strings) and `resolution.HyDe` (a hypothetical-answer passage for dense retrieval) as part of its single `ResolutionOutput` call. DocNode does **not** run its own rewrite step — it consumes `resolution.Queries`, falling back to `state["query"]` only if that list is empty. `DocSearchArgs` in `query_schemas.py` is now dead, the same way `intent_registry.py` was flagged dead in `docs/router-node-design.md` §10 — nothing should be built against it.
 
 ### 3.2 Stage B — Retrieval
-Call `hybrid_search(query, top_k=settings.DOC_TOP_K)` from `vector_store.py` (after fixing its import). Returns Qdrant `ScoredPoint`s already RRF-fused across dense+sparse — no reranking model needed at this stage.
+Call `hybrid_search(query, top_k=settings.DOC_TOP_K, content_type=resolution.content_type)` from `vector_store.py` (after fixing its import) once per string in `resolution.Queries`, merging results by point id (a chunk can legitimately surface for more than one query — keep its best score) before the relevance filter in 3.3. Returns Qdrant `ScoredPoint`s already RRF-fused across dense+sparse — no reranking model needed at this stage.
+
+**Open gap:** `resolution.doc_type` has no enforcement path today. `hybrid_search` only filters on `content_type` — nothing filters by document or category — so a `doc_type` restriction from RouterNode is produced but currently inert. Either extend `hybrid_search`'s filter to include `doc_type` (and, more usefully, a per-document `file_id`/`source` filter — the manifest's `doc_sources[].file_id` is exactly what's stored as each chunk's `source` payload field) or drop the field from `ResolutionOutput` until DocNode can act on it.
 
 ### 3.3 Stage C — Relevance filtering (the "enhancement")
 RRF scores aren't calibrated probabilities, so don't threshold on an absolute value. Keep it simple and relative:
@@ -96,11 +98,9 @@ class GraphState(TypedDict, total=False):
     llm: Any
 
     # router_node
-    intent: Literal["mathematical", "factual", "conversational"]
-    route: list[str]
+    resolution: ResolutionOutput   # needs_rag, needs_db, HyDe, Queries, content_type, doc_type, SQL_Query
 
     # doc_node
-    doc_search_query: str
     doc_chunks: list[dict]
     citations: list[Citation]
 
@@ -132,18 +132,18 @@ class GraphState(TypedDict, total=False):
 ```mermaid
 flowchart TD
     UI[User Query] --> PS[PersonaSelector<br/>resolve persona + bind LLM]
-    PS --> RN[RouterNode<br/>classify intent]
+    PS --> RN[RouterNode<br/>needs_rag / needs_db resolution]
 
-    RN -->|factual| DOC[DocNode]
-    RN -->|mathematical| DB[DBNode]
-    RN -->|conversational or always| SUG[SuggestionNode]
+    RN -->|needs_rag| DOC[DocNode]
+    RN -->|needs_db| DB[DBNode]
+    RN -.->|parallel, unconditional| SUG[SuggestionNode]
 
     subgraph DocNode internals
-        DOC1[Rewrite query<br/>DocSearchArgs] --> DOC2[hybrid_search<br/>Qdrant dense+sparse RRF]
+        DOC2[hybrid_search per resolution.Queries<br/>Qdrant dense+sparse RRF]
         DOC2 --> DOC3[Relevance filter<br/>relative score cutoff + cap]
         DOC3 --> DOC4[Citation packaging<br/>page/section/screenshot]
     end
-    DOC --> DOC1
+    DOC --> DOC2
 
     DB --> MATH[MathNode<br/>moving avg / trend / threshold]
 
@@ -173,7 +173,7 @@ Ordered so each step is independently testable, same philosophy as the phased pl
 3. **`schemas/citation_schemas.py`** — the `Citation` model, since DocNode and AnswerFormatter both need it.
 4. **`nodes/doc_node.py`** — retrieval → relevance filter → citation packaging, per §3. Write a `doc_node_demo.py` script mirroring `db_agent_demo.py`'s stages, so retrieval correctness is provable outside the graph (matches the plan's Phase 2 exit criterion).
 5. **`nodes/persona_selector.py`** — thin wrapper over `provider_registry.get_model_for_persona`, ~10 lines.
-6. **`nodes/router_node.py`** — structured-output classifier using `intent_registry.CLASSIFIER_GUIDANCE`, dispatch via `INTENT_ROUTES`.
+6. **`nodes/router_node.py`** — **done.** Implemented as the `ResolutionOutput` fan-out classifier from `docs/router-node-design.md`, not the intent/`INTENT_ROUTES` classifier this step originally described — see §2/§3.1/§4 above.
 7. **`core/graph_builder.py`** — wire the `StateGraph` with the edges from §2.
 8. **`nodes/answer_formatter.py`** — implement synthesis + grounding check; the `CITATION_RULE` constant is already there to build on.
 9. **`nodes/suggestion_node.py`** — trivial follow-up generation call.

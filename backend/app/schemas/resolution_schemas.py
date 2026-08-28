@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Literal, Optional
+from typing import Optional
 
 from app.schemas.query_schemas import SQLQueryArgs
 
@@ -15,10 +15,10 @@ class ResolutionOutput(BaseModel):
         "", description="Hypothetical answer used to improve dense retrieval. Only set when needs_rag is True; leave empty otherwise.")
     Queries: list[str] = Field(
         default_factory=list, description="Search queries to run against the vector store. Only set when needs_rag is True; leave empty otherwise.")
-    content_type: Optional[Literal["table", "text", "mixed"]] = Field(
-        None, description="Restrict RAG search to this chunk content type. Only set when needs_rag is True; leave unset to search all types.")
     doc_type: Optional[str] = Field(
-        None, description="Restrict RAG search to this doc_type, chosen from the doc_sources listed in the manifest. Only set when needs_rag is True; leave unset to search all doc_types.")
+        None, description="Restrict RAG search to this domain/category, chosen from the doc_type values found "
+        "across the manifest's doc_sources entries (e.g. 'legal_data', 'financial_data'). Only set when "
+        "needs_rag is True; leave unset to search all doc_types.")
 
     SQL_Query: Optional[SQLQueryArgs] = Field(
         None, description="Read-only SQL SELECT statement and reason. Only set when needs_db is True; leave unset otherwise.")
