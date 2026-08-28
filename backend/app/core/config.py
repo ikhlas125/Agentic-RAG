@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from typing import List, Optional
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 CONFIG_FILE = Path(__file__).resolve()
@@ -9,6 +10,12 @@ CONFIG_FILE = Path(__file__).resolve()
 APP_DIR = CONFIG_FILE.parents[1]        # .../backend/app
 BACKEND_DIR = CONFIG_FILE.parents[2]    # .../backend
 PROJECT_ROOT = CONFIG_FILE.parents[3]   # .../dynamic-agentic-systems
+
+# Load backend/.env into the real process environment (os.environ) — separate from
+# and in addition to Settings' own .env parsing below, which only fills typed fields
+# on `settings` and never touches os.environ. Libraries that read os.environ directly
+# (e.g. langsmith's @traceable, which checks LANGSMITH_TRACING) need this step.
+load_dotenv(BACKEND_DIR / ".env")
 
 # Storage Directories (backend/storage/...)
 STORAGE_DIR = BACKEND_DIR / "storage"
