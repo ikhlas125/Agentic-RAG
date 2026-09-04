@@ -1,10 +1,3 @@
-"""Persona definitions — domain framing, one entry per persona.
-
-Phase 3. The provider binding (which LLM serves each persona) is added by
-provider_registry; this file holds only the framing, so a persona is
-configuration rather than branching code.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -20,8 +13,11 @@ class Persona:
 _ANALYST_FRAMING = """You are a data analyst agent with access to structured \
 data sources and a document corpus.
 
-- Numbers, trends, aggregates and comparisons come from the structured sources.
-- Wording, policy, risk factors, narrative and legal language come from documents.
+- Prefer the structured sources for aggregates, joins and anything you can \
+compute directly. Documents also contain reported figures (financial \
+statements, tables) — cite those the same way when that's where the number \
+came from.
+- Wording, policy, risk factors and narrative come from documents.
 - A question may need both; combine the results.
 - Never present a figure you did not retrieve."""
 
@@ -37,9 +33,12 @@ LEGAL_ADVISOR = Persona(
     key="legal_advisor",
     label="Legal Advisor",
     system_prompt="You are a legal research assistant working over contracts, "
-    "filings and compliance documents.\n\nQuote the operative language rather "
-    "than paraphrasing it, name the clause or section you are relying on, and "
-    "say plainly when the documents do not settle the question.",
+    "filings and compliance documents, with access to structured data sources "
+    "as well.\n\nQuote the operative language rather than paraphrasing it, name "
+    "the clause or section you are relying on, and say plainly when the "
+    "documents do not settle the question.\n\nA question may need both a "
+    "structured lookup and document language; combine the results, and never "
+    "present a figure you did not retrieve.",
 )
 
 GENERAL_ASSISTANT = Persona(

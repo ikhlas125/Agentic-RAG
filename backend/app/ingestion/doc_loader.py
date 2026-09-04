@@ -69,7 +69,3 @@ def load_folder(folder=None, index: bool = True) -> FileAdapter:
 
     register_db(adapter)  # after the loop, so the schema is complete
     return adapter
-
-
-if __name__ == "__main__":
-    load_folder(settings.storage_dir, True)

@@ -16,8 +16,10 @@ from typing import Any
 
 from app.core.config import settings
 from app.core.graph_state import State
+from app.llm.provider_registry import get_model
 from app.retrieval.base_store import DataAdapter
 from app.schemas.query_schemas import SQLQueryArgs
+from langsmith import traceable
 
 SQL_PROMPT = """Write ONE read-only {dialect} query that answers the question.
 
@@ -34,14 +36,19 @@ MAX_ATTEMPTS = 3
 
 
 def generate_sql(llm: Any, adapter: DataAdapter, question: str,
-                 sample_rows: int | None = None) -> tuple[dict[str, Any], list[dict]]:
-    """Draft SQL, run it, and retry against the error message on failure.
+                 sample_rows: int | None = None,
+                 draft: SQLQueryArgs | None = None) -> tuple[dict[str, Any], list[dict]]:
+    """Run a draft SQL query, falling back to LLM drafting/retry on failure.
+
+    `draft`, if given, is RouterNode's `resolution.SQL_Query` (same
+    `SQLQueryArgs` shape) — tried first with no LLM call at all. Only a
+    failed first attempt, or no draft being given, spends an LLM call here.
 
     Returns (result, attempts). `result` is the adapter payload — ok/columns/
     rows, or ok=False/error once attempts are exhausted.
     """
     sample_rows = settings.SQL_SAMPLE_ROWS if sample_rows is None else sample_rows
-    writer = llm.with_structured_output(SQLQueryArgs)
+    writer = llm.with_structured_output(SQLQueryArgs, method="function_calling", include_raw=True)
 
     prompt = SQL_PROMPT.format(
         dialect=adapter.dialect,
@@ -52,12 +59,26 @@ def generate_sql(llm: Any, adapter: DataAdapter, question: str,
     result: dict[str, Any] = {"ok": False, "error": "No attempt was made."}
     attempts: list[dict[str, Any]] = []
 
-    for _ in range(MAX_ATTEMPTS):
-        draft = writer.invoke(prompt)
-        result = adapter.run(sql=draft.sql)
+    for attempt_num in range(MAX_ATTEMPTS):
+        if attempt_num == 0 and draft is not None:
+            sql_draft = draft
+        else:
+            output = writer.invoke(prompt)
+            sql_draft = output["parsed"]
+            if sql_draft is None:
+                # Schema mismatch, not a SQL error — same recoverable-by-rewriting
+                # treatment as a rejected query, just fed back differently.
+                attempts.append({"sql": "", "reason": "", "ok": False, "error": str(output["parsing_error"])})
+                prompt += (
+                    f"\n\nYour last response did not match the required schema: "
+                    f"{output['parsing_error']}\nFix the shape and try again."
+                )
+                continue
+
+        result = adapter.run(sql=sql_draft.sql)
         attempts.append({
-            "sql": draft.sql,
-            "reason": draft.reason,
+            "sql": sql_draft.sql,
+            "reason": sql_draft.reason,
             "ok": result["ok"],
             "error": result.get("error"),
         })
@@ -69,16 +90,20 @@ def generate_sql(llm: Any, adapter: DataAdapter, question: str,
 
     return result, attempts
 
-
+@traceable
 def db_node(state: State) -> State:
     """Graph entrypoint: state -> state."""
     adapter: DataAdapter = state["adapter"]
+    # Prefer the persona-bound model; fall back to a direct model for
+    # standalone use (persona_selector.py doesn't exist yet).
+    llm = state.get("llm") or get_model(model=settings.ROUTER_MODEL)
+    resolution = state.get("resolution")
+    draft = resolution.SQL_Query if resolution is not None else None
     result, attempts = generate_sql(
-        llm=state["llm"],              # bound upstream by persona_selector
+        llm=llm,
         adapter=adapter,
-        question=state["query"],
+        question=state["request"].question,
+        draft=draft,
     )
 
-    state["db_result"] = result
-    state["db_attempts"] = attempts    # feeds the WebSocket trace view
-    return state
+    return {"db_result": result, "db_attempts": attempts}    # feeds the WebSocket trace view

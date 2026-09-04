@@ -67,12 +67,13 @@ class Settings(BaseSettings):
     OPENROUTER_API_KEY: Optional[str] = None
     OPENROUTER_BASE_URL: str = "https://openrouter.ai/api/v1"
     OPENROUTER_MODEL: str = "openai/gpt-4o-mini"
+    RERANKER_MODEL: str = "voyageai/rerank-2.5"
 
     # GMI Cloud — heavy reasoning (the routing agent). Only the free MiniMax
     # models: "MiniMaxAI/MiniMax-M2.7" and "MiniMaxAI/MiniMax-M3".
     GMI_API_KEY: Optional[str] = None
     GMI_BASE_URL: str = "https://api.gmi-serving.com/v1"
-    ROUTER_MODEL: str = "MiniMaxAI/MiniMax-M2.7"
+    ROUTER_MODEL: str = "MiniMaxAI/MiniMax-M3"
 
     # Structured-source defaults (DBNode / retrieval adapters)
     SQL_MAX_ROWS: int = 200

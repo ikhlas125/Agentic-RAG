@@ -1,4 +1,3 @@
-import json
 import uuid
 
 from fastembed import SparseTextEmbedding
@@ -8,7 +7,7 @@ from qdrant_client.http.models import (
     PointStruct, SparseVector,
 )
 
-from app.core.config import OUTPUT_DIR, settings
+from app.core.config import settings
 from app.ingestion.embedder import embed_texts
 
 _COLLECTION = settings.QDRANT_COLLECTION
@@ -32,10 +31,17 @@ _qdrant = _build_client()
 _sparse_model = SparseTextEmbedding(model_name="Qdrant/bm25")
 
 
+def _ensure_doc_type_index():
+    _qdrant.create_payload_index(
+        collection_name=_COLLECTION, field_name="doc_type", field_schema="keyword",
+    )
+
+
 def _ensure_hybrid_collection():
     if _qdrant.collection_exists(_COLLECTION):
         vectors_config = _qdrant.get_collection(_COLLECTION).config.params.vectors
         if isinstance(vectors_config, dict) and vectors_config.get("dense") and vectors_config["dense"].size == _VECTOR_SIZE:
+            _ensure_doc_type_index()
             return  # already on the named dense+sparse schema with matching dimensions
         _qdrant.delete_collection(_COLLECTION)  # old/mismatched schema, e.g. different embedding model dimensions
 
@@ -44,6 +50,7 @@ def _ensure_hybrid_collection():
         vectors_config={"dense": VectorParams(size=_VECTOR_SIZE, distance=Distance.COSINE)},
         sparse_vectors_config={"sparse": SparseVectorParams(modifier=Modifier.IDF)},
     )
+    _ensure_doc_type_index()
 
 
 def index_chunks(chunks):
@@ -74,14 +81,3 @@ def index_chunks(chunks):
 
     _qdrant.upsert(collection_name=_COLLECTION, points=points)
     return len(points)
-
-
-if __name__ == "__main__":
-    name = "doc"
-    chunks_path = OUTPUT_DIR / name / "chunks_.json"
-
-    with open(chunks_path, "r", encoding="utf-8") as f:
-        chunks = json.load(f)
-
-    count = index_chunks(chunks)
-    print(f"Indexed {count} points into '{_COLLECTION}'")

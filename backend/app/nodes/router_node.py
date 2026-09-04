@@ -18,10 +18,10 @@ at their default (empty/unset).
 If needs_rag is True:
 - HyDe: a short hypothetical passage that would answer the question, phrased the way \
 it would appear in a real document. Used to improve dense retrieval.
-- Queries: 1-3 short search strings to run against the vector store.
+- Queries: Decompose the user query into smaller, focused sub-questions "
+"that can each be answered independently. (1-3)"
 - doc_type: a doc_type value shared by the relevant documents below (e.g. \
-'legal_data', 'financial_data') — only set if the question is clearly scoped to that \
-category; otherwise leave unset.
+'legal_data', 'financial_data').
 
 If needs_db is True:
 - SQL_Query must be an object with two keys — {{"sql": "...", "reason": "..."}} — \
@@ -37,7 +37,24 @@ Document sources (doc_sources):
 Structured sources (db_sources):
 {db_sources}
 
-Question: {question}"""
+Question: {question}{retry_note}"""
+
+RETRY_NOTE = """
+
+A previous attempt at this question was reviewed and found insufficient: {reasoning}
+Sources that were retrieved but didn't cover the gap: {unused_relevant_sources}
+
+Adjust the search (doc_type, queries, HyDe, or SQL) to actually find what's missing."""
+
+
+def _format_retry_note(state: State) -> str:
+    judgment = state.get('grounding_judgment')
+    if not judgment or judgment.retry_node != "router_node":
+        return ""
+    return RETRY_NOTE.format(
+        reasoning=judgment.reasoning,
+        unused_relevant_sources=judgment.unused_relevant_sources,
+    )
 
 
 def _format_doc_sources(doc_sources: list[dict]) -> str:
@@ -73,12 +90,13 @@ def Router_Agent(state: State):
 
     classifier = get_model(
         model=settings.ROUTER_MODEL,
-    ).with_structured_output(ResolutionOutput, include_raw=True)
+    ).with_structured_output(ResolutionOutput, method="function_calling", include_raw=True)
 
     prompt = ROUTER_PROMPT.format(
         doc_sources=_format_doc_sources(data_manifest.get("doc_sources", [])),
         db_sources=_format_db_sources(data_manifest.get("db_sources", [])),
-        question=state["query"],
+        question=state["request"].question,
+        retry_note=_format_retry_note(state),
     )
 
     resolution = None

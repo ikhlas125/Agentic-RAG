@@ -4,7 +4,7 @@ from docling.datamodel.pipeline_options import PdfPipelineOptions, TableFormerMo
 from docling.document_converter import DocumentConverter, PdfFormatOption
 import pymupdf4llm
 import json
-from app.core.config import DOCUMENTS_DIR, OUTPUT_DIR
+from app.core.config import OUTPUT_DIR
 from app.helper.helper import make_json_serializable
 from pathlib import Path
 import fitz
@@ -182,19 +182,3 @@ def docling_parser(input_path: str):
 
     with open(os.path.join(output_dir, f"{name}_docling.json"), "w", encoding="utf-8") as f:
         f.write(result.document.model_dump_json(indent=2))
-
-
-if __name__ == "__main__":
-    name = "doc"
-    pdf = DOCUMENTS_DIR / f"{name}.pdf"
-    artifacts = OUTPUT_DIR / name
-
-    pdf_parser(pdf)
-    table_pages_pdf(artifacts / f"{name}.json", pdf)
-    docling_parser(artifacts / f"{name}_table_pages.pdf")
-    replace_tables_with_docling(
-        artifacts / f"{name}.json",
-        artifacts / f"{name}_docling.json",
-        artifacts / f"{name}_docling.md",
-        artifacts / f"{name}_fixed.md",
-    )
